@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directorio de Profesionales — Soluciona Ya</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .dir-hero { background: linear-gradient(135deg, #007a3d 0%, #00a651 60%, #007a3d 100%); color: white; padding: 52px 24px 44px; text-align: center; }
+    .dir-hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+    .search-bar { max-width: 600px; margin: 22px auto 0; display: flex; gap: 10px; flex-wrap: wrap; }
+    .search-bar input, .search-bar select { flex: 1; min-width: 160px; padding: 12px 16px; border-radius: 50px; border: none; font-size: .93rem; font-family: inherit; }
+    .search-bar button { padding: 12px 24px; background: var(--secondary); color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .93rem; }
+
+    .dir-body { max-width: 1060px; margin: 0 auto; padding: 28px 24px; }
+    .dir-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+
+    .prof-card {
+      background: white; border-radius: 14px; padding: 20px;
+      box-shadow: var(--shadow); transition: all .2s; text-decoration: none; color: var(--text);
+      display: flex; flex-direction: column; gap: 10px; border: 2px solid transparent;
+      position: relative; overflow: hidden;
+    }
+    .prof-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--border); }
+    .prof-card.elite { border-color: #b8860b; }
+    .prof-card.pro   { border-color: rgba(201,146,10,.4); }
+
+    .prof-card-top { display: flex; gap: 12px; align-items: flex-start; }
+    .prof-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .prof-avatar.pro   { background: linear-gradient(135deg, #1a2744, #c9920a); }
+    .prof-avatar.elite { background: linear-gradient(135deg, #78350f, #b8860b); }
+    .prof-name { font-weight: 800; font-size: .98rem; margin-bottom: 2px; }
+    .prof-cat  { font-size: .82rem; color: var(--text-light); }
+    .prof-desc { font-size: .85rem; color: #4b5563; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .prof-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
+    .prof-stars { display: flex; align-items: center; gap: 4px; font-size: .82rem; }
+    .star-filled { color: #f59e0b; }
+    .plan-ribbon { position: absolute; top: 10px; right: 0; font-size: .68rem; font-weight: 700; padding: 3px 10px 3px 8px; border-radius: 4px 0 0 4px; }
+    .plan-ribbon.elite { background: #fef3c7; color: #92400e; }
+    .plan-ribbon.pro   { background: #dbeafe; color: #1d4ed8; }
+
+    /* Auspiciadores */
+    .patrocinadores { background: #f4f6f9; padding: 40px 24px; }
+    .pat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 1060px; margin: 0 auto; }
+    .pat-card { border-radius: 14px; padding: 20px; box-shadow: 0 4px 18px rgba(0,0,0,.1); transition: transform .2s; }
+    .pat-card:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <a href="/">Inicio</a>
+    <a href="/publicitar.html" style="color:#c9920a; font-weight:700;">Publicitar</a>
+    <a href="/auth.html" style="background:rgba(255,255,255,.18); border-radius:8px;">Ingresar</a>
+  </div>
+</nav>
+
+<div class="dir-hero">
+  <h1>Directorio de Profesionales</h1>
+  <p style="opacity:.88;">Encuentra el profesional que necesitas en la Sexta Región</p>
+  <div class="search-bar">
+    <input type="text" id="buscar" placeholder="Nombre o especialidad..." oninput="filtrar()">
+    <select id="filtro-cat" onchange="filtrar()"></select>
+    <select id="filtro-plan" onchange="filtrar()">
+      <option value="">Todos los planes</option>
+      <option value="elite">👑 Élite</option>
+      <option value="pro">⭐ Pro</option>
+      <option value="basico">Básico</option>
+    </select>
+  </div>
+</div>
+
+<!-- Auspiciadores -->
+<div class="patrocinadores" id="pat-section" style="display:none;">
+  <div style="max-width:1060px; margin:0 auto 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+    <div>
+      <h2 style="font-size:1.15rem; font-weight:800; margin-bottom:2px;">🏆 Auspiciadores</h2>
+      <p style="font-size:.83rem; color:var(--text-light);">Negocios y empresas que apoyan la Sexta Región</p>
+    </div>
+    <a href="/publicitar.html" class="btn btn-sm btn-outline">+ Ser auspiciador</a>
+  </div>
+  <div class="pat-grid" id="pat-grid"></div>
+</div>
+
+<div class="dir-body">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+    <div>
+      <h2 style="font-size:1.15rem; font-weight:800; margin-bottom:2px;">Profesionales disponibles</h2>
+      <p style="font-size:.84rem; color:var(--text-light);" id="resultado-count">Cargando...</p>
+    </div>
+    <div style="font-size:.8rem; color:var(--text-light);">👑 Élite · ⭐ Pro aparecen primero</div>
+  </div>
+  <div class="dir-grid" id="dir-grid">
+    <div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+  </div>
+</div>
+
+<script src="/utils.js"></script>
+<script>
+  let todosProfs = [];
+
+  // Llenar categorías
+  populateSelect(document.getElementById('filtro-cat'), CATEGORIAS, 'Todas las categorías');
+
+  async function cargarProfs() {
+    try {
+      const data = await apiFetch('/api/profesionales/publicos');
+      todosProfs = data;
+      filtrar();
+    } catch { document.getElementById('dir-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Error al cargar</p></div>'; }
+  }
+
+  function filtrar() {
+    const q   = document.getElementById('buscar').value.toLowerCase();
+    const cat = document.getElementById('filtro-cat').value;
+    const plan= document.getElementById('filtro-plan').value;
+
+    const lista = todosProfs.filter(p => {
+      if (cat  && p.categoria !== cat) return false;
+      if (plan && p.plan_tipo !== plan) return false;
+      if (q && !p.nombre.toLowerCase().includes(q) && !(p.categoria||'').toLowerCase().includes(q) && !(p.descripcion||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    document.getElementById('resultado-count').textContent = `${lista.length} profesional${lista.length!==1?'es':''} encontrado${lista.length!==1?'s':''}`;
+    const grid = document.getElementById('dir-grid');
+    if (!lista.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">😕</div><p>No se encontraron profesionales con esos filtros</p></div>`;
+      return;
+    }
+    grid.innerHTML = lista.map(p => {
+      const plan = p.plan_tipo || 'basico';
+      const promTxt = p.promedio ? `<span>${parseFloat(p.promedio).toFixed(1)}</span>` : '';
+      const starsFull = Math.round(parseFloat(p.promedio || 0));
+      const starsHtml = [1,2,3,4,5].map(i => `<span class="star-filled" style="${i<=starsFull?'color:#f59e0b':'color:#d1d5db'};">★</span>`).join('');
+      const ribbon = plan === 'elite' ? `<div class="plan-ribbon elite">👑 ÉLITE</div>` :
+                     plan === 'pro'   ? `<div class="plan-ribbon pro">⭐ PRO</div>` : '';
+      const hasProfile = p.sitio_activo;
+      const link = hasProfile ? `/profesional.html?id=${p.id}` : '#';
+
+      return `
+        <a href="${link}" class="prof-card ${plan}" ${!hasProfile ? 'onclick="return false;" style="cursor:default;"' : ''}>
+          ${ribbon}
+          <div class="prof-card-top">
+            <div class="prof-avatar ${plan}">${p.nombre.charAt(0).toUpperCase()}</div>
+            <div style="flex:1;">
+              <div class="prof-name">${escapeHtml(p.nombre)}</div>
+              <div class="prof-cat">${escapeHtml(p.categoria || '')}</div>
+            </div>
+          </div>
+          ${p.descripcion ? `<div class="prof-desc">${escapeHtml(p.descripcion)}</div>` : ''}
+          <div class="prof-footer">
+            <div class="prof-stars">
+              ${starsHtml}
+              ${promTxt}
+              ${p.total_eval ? `<span style="color:var(--text-light); margin-left:2px;">(${p.total_eval})</span>` : ''}
+            </div>
+            ${hasProfile
+              ? `<span class="btn btn-sm btn-outline" style="font-size:.78rem; padding:4px 12px;">Ver perfil →</span>`
+              : `<span style="font-size:.76rem; color:var(--text-light);">Sin sitio público</span>`}
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  async function cargarPatrocinadores() {
+    try {
+      const ads = await apiFetch('/api/publicidad');
+      if (!ads.length) return;
+      const sec = document.getElementById('pat-section');
+      sec.style.display = '';
+      document.getElementById('pat-grid').innerHTML = ads.map(ad => `
+        <div class="pat-card" style="background:${ad.color_fondo||'#1a2744'}; color:${ad.color_texto||'#ffffff'};">
+          ${ad.imagen ? `<img src="${ad.imagen}" style="width:100%; height:70px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
+          <div style="font-weight:800; font-size:1rem; margin-bottom:4px;">${escapeHtml(ad.empresa)}</div>
+          <div style="font-size:.84rem; opacity:.9; margin-bottom:10px; line-height:1.5;">${escapeHtml(ad.descripcion)}</div>
+          <a href="tel:${escapeHtml(ad.telefono)}" style="display:inline-block; padding:7px 16px; border-radius:50px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28); color:${ad.color_texto||'#ffffff'}; text-decoration:none; font-weight:700; font-size:.82rem;">📞 ${escapeHtml(ad.telefono)}</a>
+          ${ad.url ? `<a href="${escapeHtml(ad.url)}" target="_blank" rel="noopener" style="display:inline-block; margin-left:8px; padding:7px 16px; border-radius:50px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28); color:${ad.color_texto||'#ffffff'}; text-decoration:none; font-weight:700; font-size:.82rem;">🌐 Ver más</a>` : ''}
+        </div>
+      `).join('');
+    } catch {}
+  }
+
+  cargarProfs();
+  cargarPatrocinadores();
+</script>
+</body>
+</html>

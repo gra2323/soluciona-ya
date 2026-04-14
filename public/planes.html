@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes para Profesionales — Soluciona Ya</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .hero-planes {
+      background: linear-gradient(135deg, #0f172a 0%, #1a2744 60%, #0f172a 100%);
+      color: white; padding: 64px 24px 56px; text-align: center;
+    }
+    .hero-planes h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 12px; }
+    .hero-planes p  { font-size: 1.05rem; opacity: .88; max-width: 520px; margin: 0 auto; }
+
+    .planes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px,1fr)); gap: 22px; max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+    .plan-card { background: white; border-radius: 18px; padding: 32px 26px; box-shadow: 0 4px 24px rgba(0,0,0,.1); border: 2px solid var(--border); position: relative; transition: box-shadow .2s, transform .2s; }
+    .plan-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,.15); transform: translateY(-3px); }
+    .plan-card.popular { border-color: var(--secondary); }
+    .plan-card.elite   { border-color: #b8860b; background: linear-gradient(145deg,#fff8e1,#fffef8); }
+
+    .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--secondary); color: white; padding: 4px 20px; border-radius: 20px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+
+    .plan-name  { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+    .plan-price { font-size: 2.4rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .plan-price span { font-size: 1rem; font-weight: 400; }
+    .plan-period { font-size: .84rem; color: var(--text-light); margin-bottom: 24px; }
+
+    .plan-feature { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f4f8; font-size: .9rem; }
+    .plan-feature:last-child { border-bottom: none; }
+    .plan-feature .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .plan-feature.muted { color: var(--text-light); }
+
+    .section-faq { background: white; padding: 56px 24px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .faq-q { font-weight: 700; margin-bottom: 6px; }
+    .faq-a { font-size: .9rem; color: var(--text-light); line-height: 1.7; }
+
+    .cta-planes { background: linear-gradient(135deg,#1a2744,#243560); color: white; padding: 56px 24px; text-align: center; }
+    .cta-planes h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
+
+    footer { background: #12122a; color: rgba(255,255,255,.55); text-align: center; padding: 22px; font-size: .88rem; }
+
+    @media(max-width:680px){ .hero-planes h1 { font-size:1.65rem; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <a href="/">Inicio</a>
+    <a href="/auth.html" style="background:rgba(255,255,255,.18); border-radius:8px;">Ingresar</a>
+  </div>
+</nav>
+
+<div class="hero-planes">
+  <h1>Planes para Profesionales</h1>
+  <p>Consigue más clientes en la Sexta Región. Elige el plan que mejor se adapte a tu negocio.</p>
+</div>
+
+<section style="padding: 56px 0;">
+  <div class="planes-grid">
+
+    <!-- Básico -->
+    <div class="plan-card">
+      <div class="plan-name">Plan Básico</div>
+      <div class="plan-price">Gratis</div>
+      <div class="plan-period">para siempre</div>
+      <div>
+        <div class="plan-feature"><span class="icon">✅</span> Perfil público</div>
+        <div class="plan-feature"><span class="icon">💳</span> <div>Pago por lead normal<br><strong>$1.000 por contacto</strong></div></div>
+        <div class="plan-feature"><span class="icon">📍</span> Máx. <strong>3 comunas</strong></div>
+        <div class="plan-feature muted"><span class="icon">✗</span> Sin prioridad en búsqueda</div>
+        <div class="plan-feature muted"><span class="icon">✗</span> Sin fotos de trabajos</div>
+      </div>
+      <a href="/auth.html?tipo=profesional" class="btn w-full" style="background:#f0f4f8; color:var(--text); margin-top:22px;">Registrarse gratis</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan-card popular">
+      <div class="popular-badge">MÁS POPULAR</div>
+      <div class="plan-name">Plan Pro</div>
+      <div class="plan-price" style="color:var(--secondary);">$9.990<span>/mes</span></div>
+      <div class="plan-period">CLP · cancela cuando quieras</div>
+      <div>
+        <div class="plan-feature"><span class="icon">🔥</span> <div>50% dcto en leads<br><strong>$500 por contacto</strong></div></div>
+        <div class="plan-feature"><span class="icon">📍</span> Hasta <strong>10 comunas</strong></div>
+        <div class="plan-feature"><span class="icon">⭐</span> Perfil destacado en búsquedas</div>
+        <div class="plan-feature"><span class="icon">🏷️</span> Badge <strong>PRO</strong> visible en tu perfil</div>
+        <div class="plan-feature"><span class="icon">📸</span> Hasta <strong>10 fotos</strong> de tus trabajos</div>
+      </div>
+      <a href="/auth.html?tipo=profesional" class="btn btn-secondary w-full" style="margin-top:22px;">Suscribir al Plan Pro</a>
+      <p style="font-size:.78rem; color:var(--text-light); text-align:center; margin-top:10px;">Se activa por transferencia bancaria</p>
+    </div>
+
+    <!-- Élite -->
+    <div class="plan-card elite">
+      <div class="plan-name" style="color:#78350f;">Plan Élite</div>
+      <div class="plan-price" style="color:#b8860b;">$24.990<span>/mes</span></div>
+      <div class="plan-period" style="color:#92400e;">CLP · factura disponible</div>
+      <div>
+        <div class="plan-feature" style="border-color:#f6d860;"><span class="icon">🚀</span> <div>Leads <strong>ilimitados y gratuitos</strong></div></div>
+        <div class="plan-feature" style="border-color:#f6d860;"><span class="icon">📍</span> <strong>Todas las comunas</strong> (31)</div>
+        <div class="plan-feature" style="border-color:#f6d860;"><span class="icon">🥇</span> <strong>1er lugar</strong> en búsquedas</div>
+        <div class="plan-feature" style="border-color:#f6d860;"><span class="icon">👑</span> Badge <strong>ÉLITE</strong> + verificación</div>
+        <div class="plan-feature" style="border-color:#f6d860;"><span class="icon">📸</span> Hasta <strong>10 fotos</strong> de tus trabajos</div>
+      </div>
+      <a href="/auth.html?tipo=profesional" class="btn w-full" style="background:#b8860b; color:white; margin-top:22px;">Suscribir al Plan Élite</a>
+      <p style="font-size:.78rem; color:#92400e; text-align:center; margin-top:10px;">Factura electrónica disponible</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Tabla comparativa -->
+<section style="padding: 0 24px 56px; max-width: 860px; margin: 0 auto;">
+  <h2 style="font-size:1.4rem; font-weight:800; text-align:center; margin-bottom:24px;">Comparar planes</h2>
+  <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; font-size:.9rem;">
+      <thead>
+        <tr style="background:#f4f6f9;">
+          <th style="padding:12px 16px; text-align:left; font-weight:700;">Característica</th>
+          <th style="padding:12px 16px; text-align:center; font-weight:700;">Básico</th>
+          <th style="padding:12px 16px; text-align:center; font-weight:700; color:var(--secondary);">Pro</th>
+          <th style="padding:12px 16px; text-align:center; font-weight:700; color:#b8860b;">Élite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:11px 16px;">Precio mensual</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">Gratis</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:var(--secondary);">$9.990</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:#b8860b;">$24.990</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border); background:#fafafa;">
+          <td style="padding:11px 16px;">Costo por contacto</td>
+          <td style="padding:11px 16px; text-align:center;">$1.000</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:var(--secondary);">$500 <small style="font-weight:400;">(50% dcto)</small></td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:#b8860b;">Gratis ∞</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:11px 16px;">Comunas de cobertura</td>
+          <td style="padding:11px 16px; text-align:center;">Hasta 3</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700;">Hasta 10</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:#b8860b;">Todas (31)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border); background:#fafafa;">
+          <td style="padding:11px 16px;">Prioridad en búsqueda</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">Sin prioridad</td>
+          <td style="padding:11px 16px; text-align:center;">2° lugar</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:#b8860b;">🥇 1er lugar</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:11px 16px;">Fotos de trabajos</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">No</td>
+          <td style="padding:11px 16px; text-align:center;">✅ Hasta 10</td>
+          <td style="padding:11px 16px; text-align:center;">✅ Hasta 10</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border); background:#fafafa;">
+          <td style="padding:11px 16px;">Badge visible</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">No</td>
+          <td style="padding:11px 16px; text-align:center;"><span style="background:#e8f0fe; color:#1a56db; padding:2px 8px; border-radius:12px; font-size:.8rem; font-weight:700;">PRO</span></td>
+          <td style="padding:11px 16px; text-align:center;"><span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:12px; font-size:.8rem; font-weight:700;">ÉLITE</span></td>
+        </tr>
+        <tr>
+          <td style="padding:11px 16px;">Verificación de perfil</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">No</td>
+          <td style="padding:11px 16px; text-align:center; color:var(--text-light);">No</td>
+          <td style="padding:11px 16px; text-align:center; font-weight:700; color:#b8860b;">✓ Verificado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Cómo pagar -->
+<section class="section-faq">
+  <div style="max-width:680px; margin:0 auto;">
+    <h2 style="font-size:1.4rem; font-weight:800; text-align:center; margin-bottom:24px;">Preguntas frecuentes</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">¿Cómo activo mi plan de suscripción?</div>
+      <div class="faq-a">Realiza una transferencia bancaria al banco Ripley, Cuenta Vista 4041698702, RUT 13.053.671-9, a nombre de María Graciela Lira Aguirre. Incluye tu email registrado en la glosa. El equipo activará tu plan en 24 horas hábiles.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Qué pasa con los leads que compré si cambio de plan?</div>
+      <div class="faq-a">Tu saldo no se pierde. Si cambiaste al Plan Pro, cada lead te costará $500 en vez de $1.000, aprovechando mejor tu saldo acumulado.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Puedo cancelar en cualquier momento?</div>
+      <div class="faq-a">Sí. Los planes Pro y Élite son mensuales. Al no renovar, vuelves automáticamente al Plan Básico sin perder tu perfil ni historial.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Puedo elegir mis comunas de cobertura?</div>
+      <div class="faq-a">Sí. Desde tu panel puedes seleccionar las comunas de la Sexta Región donde ofreces servicios. Plan Básico: 3 comunas · Plan Pro: hasta 10 · Plan Élite: todas.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">¿Emiten boleta o factura?</div>
+      <div class="faq-a">El Plan Élite incluye factura electrónica a nombre de tu empresa. Los demás planes emiten boleta simple a nombre personal.</div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-planes">
+  <h2>¿Listo para conseguir más clientes?</h2>
+  <p style="opacity:.85; margin-bottom:28px;">Regístrate gratis hoy y comienza a recibir solicitudes de clientes en la Sexta Región.</p>
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+    <a href="/auth.html?tipo=profesional" class="btn btn-secondary btn-lg">🚀 Registrarme como profesional</a>
+    <a href="/" class="btn btn-lg" style="background:rgba(255,255,255,.15); color:white;">Ver cómo funciona</a>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 Soluciona Ya — Profesionales y servicios en la Región del Libertador General Bernardo O'Higgins</p>
+  <p style="margin-top:6px;">Transferencias: Banco Ripley · Cta Vista 4041698702 · gracielalira@gmail.com</p>
+</footer>
+
+</body>
+</html>

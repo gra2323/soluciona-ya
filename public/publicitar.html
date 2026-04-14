@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicita tu Negocio — Soluciona Ya</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .hero-pub { background: linear-gradient(135deg, #0f172a 0%, #1a2744 60%, #0f172a 100%); color: white; padding: 60px 24px 50px; text-align: center; }
+    .hero-pub h1 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
+    .hero-pub p  { font-size: 1rem; opacity: .88; max-width: 500px; margin: 0 auto; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; max-width: 700px; margin: 40px auto 0; }
+    .price-card { background: white; border-radius: 14px; padding: 24px; text-align: center; box-shadow: var(--shadow); border: 2px solid var(--border); }
+    .price-card.popular { border-color: var(--secondary); }
+    .price-val { font-size: 2.2rem; font-weight: 800; color: var(--secondary); line-height: 1; margin: 8px 0 4px; }
+    .price-period { font-size: .84rem; color: var(--text-light); margin-bottom: 16px; }
+    .price-feature { font-size: .87rem; padding: 6px 0; border-bottom: 1px solid #f0f4f8; }
+    .price-feature:last-of-type { border: none; }
+
+    .form-section { max-width: 660px; margin: 0 auto; padding: 48px 24px; }
+    .preview-ad { border-radius: 14px; padding: 22px 20px; margin-top: 18px; box-shadow: 0 4px 18px rgba(0,0,0,.12); }
+    .color-swatch { width: 32px; height: 32px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <a href="/">Inicio</a>
+    <a href="/planes.html">Planes profesionales</a>
+    <a href="/auth.html" style="background:rgba(255,255,255,.18); border-radius:8px;">Ingresar</a>
+  </div>
+</nav>
+
+<div class="hero-pub">
+  <h1>📢 Publicita tu negocio</h1>
+  <p>Llega a miles de personas de la Sexta Región que visitan Soluciona Ya cada semana.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div style="font-size:1rem; font-weight:800;">Aviso Semanal</div>
+      <div class="price-val">$5.000</div>
+      <div class="price-period">7 días · CLP</div>
+      <div class="price-feature">Visible en página principal</div>
+      <div class="price-feature">Teléfono clickeable</div>
+      <div class="price-feature">Imagen opcional</div>
+      <div class="price-feature">Color personalizado</div>
+    </div>
+    <div class="price-card popular">
+      <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--secondary); color:white; padding:3px 16px; border-radius:20px; font-size:.74rem; font-weight:700; white-space:nowrap;">MÁS POPULAR</div>
+      <div style="font-size:1rem; font-weight:800;">Aviso Mensual</div>
+      <div class="price-val">$15.000</div>
+      <div class="price-period">30 días · CLP</div>
+      <div class="price-feature">Todo lo del semanal</div>
+      <div class="price-feature"><strong>3x más exposición</strong></div>
+      <div class="price-feature">Prioridad sobre semanal</div>
+      <div class="price-feature">Badge "Mensual" destacado</div>
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div id="form-alert" style="margin-bottom:16px;"></div>
+  <div id="exito-box" class="hidden">
+    <div class="alert alert-success" style="font-size:.95rem; padding:18px;">
+      <strong style="font-size:1.1rem;">✅ ¡Solicitud enviada!</strong><br><br>
+      Tu aviso fue registrado. Para activarlo, realiza la transferencia bancaria:<br><br>
+      <strong>Banco Ripley · Cuenta Vista 4041698702</strong><br>
+      RUT 13.053.671-9 · María Graciela Lira Aguirre<br>
+      Email: gracielalira@gmail.com<br><br>
+      Incluye en la glosa: <strong id="glosa-txt"></strong><br><br>
+      Tu aviso se activará en 24 horas hábiles tras confirmar el pago.
+    </div>
+    <a href="/" class="btn btn-primary w-full" style="margin-top:14px;">Volver al inicio →</a>
+  </div>
+
+  <div id="form-container">
+    <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:6px;">Crear mi aviso</h2>
+    <p style="font-size:.88rem; color:var(--text-light); margin-bottom:24px;">Completa los datos y realiza la transferencia para activar tu publicidad.</p>
+
+    <!-- Plan -->
+    <div class="form-group">
+      <label class="form-label">Plan *</label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <label style="display:flex; align-items:center; gap:10px; padding:14px; border:2px solid var(--border); border-radius:10px; cursor:pointer;" id="lbl-semana">
+          <input type="radio" name="plan" value="semana" id="plan-semana" onchange="updatePlan()" style="accent-color:var(--secondary);">
+          <div><div style="font-weight:700;">Semanal</div><div style="font-size:.8rem; color:var(--text-light);">$5.000 · 7 días</div></div>
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; padding:14px; border:2px solid var(--secondary); border-radius:10px; cursor:pointer; background:#fef9ec;" id="lbl-mes">
+          <input type="radio" name="plan" value="mes" id="plan-mes" checked onchange="updatePlan()" style="accent-color:var(--secondary);">
+          <div><div style="font-weight:700; color:var(--secondary);">Mensual</div><div style="font-size:.8rem; color:var(--text-light);">$15.000 · 30 días</div></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Datos del negocio -->
+    <div class="form-group">
+      <label class="form-label">Nombre de tu negocio o empresa *</label>
+      <input type="text" class="form-control" id="pub-empresa" placeholder="Ej: Ferretería El Tornillo" oninput="updatePreview()" maxlength="60" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción / mensaje del aviso * <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(máx. 140 caracteres)</span></label>
+      <textarea class="form-control" id="pub-descripcion" placeholder="Ej: Todo en materiales de construcción. Despacho a toda la Sexta Región." oninput="updatePreview()" maxlength="140" style="min-height:80px;" required></textarea>
+      <div style="text-align:right; font-size:.75rem; color:var(--text-light); margin-top:3px;"><span id="char-count">0</span>/140</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Teléfono de contacto * <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">Ej: +56 9 1234 5678</span></label>
+      <input type="tel" class="form-control" id="pub-telefono" placeholder="+56 9 1234 5678" oninput="validarTelPub(this); updatePreview()" required>
+      <div id="pub-tel-error" style="color:var(--danger); font-size:.78rem; margin-top:4px; display:none;">⚠ Teléfono chileno inválido</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Sitio web o red social <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(opcional)</span></label>
+      <input type="url" class="form-control" id="pub-url" placeholder="https://tuempresa.cl" oninput="updatePreview()">
+    </div>
+
+    <!-- Colores -->
+    <div class="form-group">
+      <label class="form-label">Color del aviso</label>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:8px;">
+        <div onclick="setColor('#1a2744','#ffffff')" class="color-swatch" style="background:#1a2744;" title="Azul oscuro"></div>
+        <div onclick="setColor('#b8860b','#ffffff')" class="color-swatch" style="background:#b8860b;" title="Dorado"></div>
+        <div onclick="setColor('#1b5e20','#ffffff')" class="color-swatch" style="background:#1b5e20;" title="Verde oscuro"></div>
+        <div onclick="setColor('#7b1fa2','#ffffff')" class="color-swatch" style="background:#7b1fa2;" title="Morado"></div>
+        <div onclick="setColor('#c62828','#ffffff')" class="color-swatch" style="background:#c62828;" title="Rojo"></div>
+        <div onclick="setColor('#0277bd','#ffffff')" class="color-swatch" style="background:#0277bd;" title="Azul"></div>
+        <div onclick="setColor('#ffffff','#1a2744')" class="color-swatch" style="background:#ffffff; border-color:#ccc;" title="Blanco"></div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:.82rem; color:var(--text-light);">Personalizado:</label>
+          <input type="color" id="color-picker" value="#1a2744" oninput="setColor(this.value,'#ffffff')" style="width:36px; height:32px; border:none; cursor:pointer; border-radius:6px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Imagen (opcional) -->
+    <div class="form-group">
+      <label class="form-label">Imagen del negocio <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(opcional · máx. 2 MB)</span></label>
+      <input type="file" accept="image/*" id="pub-imagen" class="form-control" onchange="cargarImagen(this)" style="padding:8px;">
+    </div>
+
+    <!-- Preview -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:.82rem; font-weight:600; color:var(--text-light); margin-bottom:8px;">VISTA PREVIA</div>
+      <div class="preview-ad" id="preview-card" style="background:#1a2744; color:#ffffff;">
+        <div style="font-size:.65rem; font-weight:700; background:rgba(255,255,255,.2); padding:2px 8px; border-radius:10px; display:inline-block; margin-bottom:10px;" id="prev-tag">Anunciante mensual</div>
+        <div id="prev-img"></div>
+        <div style="font-size:1.05rem; font-weight:800; margin-bottom:6px;" id="prev-empresa">Tu negocio aquí</div>
+        <div style="font-size:.88rem; opacity:.9; line-height:1.55; margin-bottom:12px;" id="prev-desc">Descripción de tu aviso...</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <span style="padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);" id="prev-tel">📞 +56 9 XXXX XXXX</span>
+          <span id="prev-url" style="display:none; padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);">🌐 Ver más</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pago info -->
+    <div style="background:#f0f4f8; border-radius:12px; padding:16px 18px; margin-bottom:20px; font-size:.85rem;">
+      <div style="font-weight:700; margin-bottom:8px; color:var(--primary);">💳 Datos de pago (transferencia bancaria)</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:4px 14px; line-height:1.9;">
+        <span style="color:var(--text-light);">Banco</span>      <strong>Banco Ripley</strong>
+        <span style="color:var(--text-light);">Cuenta</span>     <strong>Vista 4041698702</strong>
+        <span style="color:var(--text-light);">RUT</span>        <strong>13.053.671-9</strong>
+        <span style="color:var(--text-light);">Nombre</span>     <strong>María Graciela Lira Aguirre</strong>
+        <span style="color:var(--text-light);">Monto</span>      <strong id="pago-monto">$15.000</strong>
+        <span style="color:var(--text-light);">Glosa</span>      <strong id="pago-glosa">Publicidad mensual — tu empresa</strong>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary w-full btn-lg" onclick="enviarSolicitud()">
+      📤 Enviar solicitud y coordinar pago
+    </button>
+    <p style="text-align:center; font-size:.8rem; color:var(--text-light); margin-top:10px;">Tu aviso se activará en 24h hábiles tras confirmar tu transferencia.</p>
+  </div>
+</div>
+
+<footer style="background:#12122a; color:rgba(255,255,255,.55); text-align:center; padding:22px; font-size:.88rem;">
+  <p>© 2025 Soluciona Ya — Sexta Región · Publicidad: gracielalira@gmail.com</p>
+</footer>
+
+<script src="/utils.js"></script>
+<script>
+  let colorFondo = '#1a2744', colorTexto = '#ffffff';
+  let imagenBase64 = null;
+
+  function updatePlan() {
+    const esMes = document.getElementById('plan-mes').checked;
+    document.getElementById('lbl-semana').style.borderColor = !esMes ? 'var(--secondary)' : 'var(--border)';
+    document.getElementById('lbl-semana').style.background = !esMes ? '#fef9ec' : 'white';
+    document.getElementById('lbl-mes').style.borderColor = esMes ? 'var(--secondary)' : 'var(--border)';
+    document.getElementById('lbl-mes').style.background = esMes ? '#fef9ec' : 'white';
+    document.getElementById('pago-monto').textContent = esMes ? '$15.000' : '$5.000';
+    document.getElementById('prev-tag').textContent = esMes ? 'Anunciante mensual' : 'Anunciante semanal';
+    updateGlosa();
+  }
+
+  function updateGlosa() {
+    const empresa = document.getElementById('pub-empresa').value || 'tu empresa';
+    const plan = document.getElementById('plan-mes').checked ? 'mensual' : 'semanal';
+    const glosa = `Publicidad ${plan} — ${empresa}`;
+    document.getElementById('pago-glosa').textContent = glosa;
+    document.getElementById('glosa-txt').textContent = glosa;
+  }
+
+  function setColor(fondo, texto) {
+    colorFondo = fondo; colorTexto = texto;
+    document.getElementById('preview-card').style.background = fondo;
+    document.getElementById('preview-card').style.color = texto;
+    const btnBg = texto === '#ffffff' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
+    const btnBorder = texto === '#ffffff' ? 'rgba(255,255,255,.3)' : 'rgba(0,0,0,.2)';
+    document.querySelectorAll('#preview-card span').forEach(el => {
+      el.style.background = btnBg; el.style.borderColor = btnBorder; el.style.color = texto;
+    });
+    if (fondo !== (document.getElementById('color-picker').value)) {
+      document.getElementById('color-picker').value = fondo.startsWith('#') ? fondo : '#1a2744';
+    }
+  }
+
+  function updatePreview() {
+    const empresa = document.getElementById('pub-empresa').value || 'Tu negocio aquí';
+    const desc    = document.getElementById('pub-descripcion').value || 'Descripción de tu aviso...';
+    const tel     = document.getElementById('pub-telefono').value || '+56 9 XXXX XXXX';
+    const url     = document.getElementById('pub-url').value;
+    document.getElementById('prev-empresa').textContent = empresa;
+    document.getElementById('prev-desc').textContent = desc;
+    document.getElementById('prev-tel').textContent = `📞 ${tel}`;
+    const urlEl = document.getElementById('prev-url');
+    urlEl.style.display = url ? 'inline-block' : 'none';
+    document.getElementById('char-count').textContent = document.getElementById('pub-descripcion').value.length;
+    updateGlosa();
+  }
+
+  function validarTelPub(input) {
+    const val = input.value.replace(/\s/g, '');
+    const ok = /^(\+?56)?0?9\d{8}$/.test(val);
+    const err = document.getElementById('pub-tel-error');
+    err.style.display = (!ok && val.length > 3) ? 'block' : 'none';
+    input.style.borderColor = (!ok && val.length > 3) ? 'var(--danger)' : '';
+    return ok;
+  }
+
+  function cargarImagen(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showAlert(document.getElementById('form-alert'), 'La imagen no puede superar 2 MB');
+      input.value = ''; return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      imagenBase64 = e.target.result;
+      document.getElementById('prev-img').innerHTML = `<img src="${imagenBase64}" style="width:100%; height:80px; object-fit:cover; border-radius:8px; margin-bottom:8px;">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function enviarSolicitud() {
+    const empresa = document.getElementById('pub-empresa').value.trim();
+    const descripcion = document.getElementById('pub-descripcion').value.trim();
+    const telefono = document.getElementById('pub-telefono').value.trim();
+    const url = document.getElementById('pub-url').value.trim();
+    const plan = document.getElementById('plan-mes').checked ? 'mes' : 'semana';
+
+    if (!empresa || !descripcion || !telefono) {
+      return showAlert(document.getElementById('form-alert'), 'Completa los campos obligatorios: empresa, descripción y teléfono.');
+    }
+    const telLimpio = telefono.replace(/\s/g,'');
+    if (!/^(\+?56)?0?9\d{8}$/.test(telLimpio)) {
+      document.getElementById('pub-tel-error').style.display = 'block';
+      document.getElementById('pub-telefono').focus();
+      return;
+    }
+
+    try {
+      await apiFetch('/api/publicidad/solicitar', { method: 'POST', body: {
+        empresa, descripcion, telefono, url: url || null,
+        imagen: imagenBase64 || null,
+        color_fondo: colorFondo, color_texto: colorTexto, plan
+      }});
+      document.getElementById('form-container').classList.add('hidden');
+      document.getElementById('exito-box').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch(err) {
+      showAlert(document.getElementById('form-alert'), err.message);
+    }
+  }
+
+  // init
+  updatePlan();
+  updatePreview();
+</script>
+</body>
+</html>

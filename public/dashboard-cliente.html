@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya - Panel Cliente</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .dash-header { background: var(--primary); color: white; padding: 20px 24px; }
+    .dash-header h1 { font-size: 1.35rem; margin-bottom: 3px; }
+    .dash-header p { opacity: .85; font-size: .88rem; }
+    .solicitud-title { font-size: 1rem; font-weight: 700; }
+    .solicitud-meta { font-size: .83rem; color: var(--text-light); margin-top: 5px; }
+    .solicitud-desc { font-size: .88rem; color: var(--text-light); margin-top: 8px; line-height: 1.5; }
+    .views-badge { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 20px; font-size: .76rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <span id="user-name" style="color:rgba(255,255,255,.85); font-size:.88rem;"></span>
+    <button onclick="handleLogout()" class="btn btn-sm" style="background:rgba(255,255,255,.2); color:white;">Salir</button>
+  </div>
+</nav>
+
+<div class="dash-header">
+  <h1>Panel de Cliente</h1>
+  <p>Publica solicitudes y encuentra al profesional ideal en la Sexta Región</p>
+</div>
+
+<div class="dashboard-tabs">
+  <div class="tab active" onclick="showPanel('mis-solicitudes')">📋 Mis solicitudes</div>
+  <div class="tab" onclick="showPanel('nueva-solicitud')">+ Nueva solicitud</div>
+  <div class="tab" onclick="showPanel('profesionales')">👷 Ver profesionales</div>
+</div>
+
+<div id="alert-global" style="max-width:1000px; margin:14px auto 0; padding:0 24px;"></div>
+
+<!-- MIS SOLICITUDES -->
+<div class="tab-panel active" id="panel-mis-solicitudes">
+  <div class="d-flex justify-between align-center mb-16">
+    <div>
+      <h2 class="section-title">Mis solicitudes</h2>
+      <p class="section-subtitle">Solicitudes de servicio que has publicado</p>
+    </div>
+    <button class="btn btn-primary" onclick="showPanel('nueva-solicitud')">+ Nueva solicitud</button>
+  </div>
+  <div id="solicitudes-lista">
+    <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+  </div>
+</div>
+
+<!-- NUEVA SOLICITUD -->
+<div class="tab-panel" id="panel-nueva-solicitud">
+  <div class="card" style="max-width:600px;">
+    <h2 class="section-title mb-8">Nueva solicitud de servicio</h2>
+    <p class="section-subtitle">Los profesionales de tu área verán tu solicitud</p>
+    <div id="form-alert"></div>
+    <form onsubmit="handleNuevaSolicitud(event)">
+      <div class="form-group">
+        <label class="form-label">Título de la solicitud *</label>
+        <input type="text" class="form-control" id="s-titulo" placeholder="Ej: Necesito electricista para instalar enchufes" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción *</label>
+        <textarea class="form-control" id="s-descripcion" placeholder="Describe con detalle lo que necesitas, tipo de trabajo, urgencia, cantidad de horas estimadas, etc." required style="min-height:120px;"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Categoría *</label>
+          <select class="form-control" id="s-categoria" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Comuna *</label>
+          <select class="form-control" id="s-comuna" required></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Presupuesto aproximado <span style="font-weight:400; color:var(--text-light); font-size:.82rem;">(opcional)</span></label>
+        <input type="text" class="form-control" id="s-presupuesto" placeholder="Ej: $50.000 - $80.000">
+      </div>
+      <div class="alert alert-warning" style="font-size:.85rem; margin-bottom:16px;">
+        ℹ️ Tu nombre, teléfono y email solo serán visibles para los profesionales que paguen <strong>$1.000</strong> para ver tu contacto.
+      </div>
+      <button type="submit" class="btn btn-primary w-full" id="solicitud-btn">Publicar solicitud</button>
+    </form>
+  </div>
+</div>
+
+<!-- PROFESIONALES -->
+<div class="tab-panel" id="panel-profesionales">
+  <div class="mb-16">
+    <h2 class="section-title">Profesionales disponibles</h2>
+    <p class="section-subtitle">Encuentra el profesional que necesitas en la Sexta Región</p>
+  </div>
+  <div style="margin-bottom:18px;">
+    <select class="form-control" id="filtro-cat-prof" style="max-width:220px;" onchange="loadProfesionales()"></select>
+  </div>
+  <div id="profesionales-lista" class="grid-3">
+    <div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+  </div>
+</div>
+
+<!-- MODAL EVALUAR -->
+<div id="modal-evaluar" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">⭐ Evaluar profesional</h3>
+      <button class="modal-close" onclick="document.getElementById('modal-evaluar').classList.add('hidden')">×</button>
+    </div>
+    <p style="font-size:.88rem; color:var(--text-light); margin-bottom:16px;">Tu opinión sobre <strong id="eval-prof-nombre"></strong></p>
+    <input type="hidden" id="eval-prof-id">
+    <input type="hidden" id="eval-solicitud-id">
+    <div class="form-group">
+      <label class="form-label">Calificación</label>
+      <select class="form-control" id="eval-estrellas">
+        <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+        <option value="4">⭐⭐⭐⭐ Muy bueno</option>
+        <option value="3">⭐⭐⭐ Bueno</option>
+        <option value="2">⭐⭐ Regular</option>
+        <option value="1">⭐ Malo</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Comentario <span style="font-weight:400; font-size:.82rem; color:var(--text-light);">(opcional)</span></label>
+      <textarea class="form-control" id="eval-comentario" placeholder="Cuéntanos cómo fue tu experiencia..." style="min-height:80px;"></textarea>
+    </div>
+    <div style="display:flex; gap:12px; margin-top:4px;">
+      <button class="btn btn-outline w-full" onclick="document.getElementById('modal-evaluar').classList.add('hidden')">Cancelar</button>
+      <button class="btn btn-secondary w-full" onclick="enviarEvaluacion()">Enviar evaluación</button>
+    </div>
+  </div>
+</div>
+
+<script src="/utils.js"></script>
+<script>
+  let currentUser = null;
+
+  async function init() {
+    const user = await checkAuth();
+    if (!user) { window.location.href = '/auth.html'; return; }
+    if (user.tipo !== 'cliente') { window.location.href = '/dashboard-profesional.html'; return; }
+    currentUser = user;
+    document.getElementById('user-name').textContent = user.nombre;
+    populateSelect(document.getElementById('s-categoria'), CATEGORIAS);
+    populateSelect(document.getElementById('s-comuna'), COMUNAS);
+    populateSelect(document.getElementById('filtro-cat-prof'), CATEGORIAS, 'Todas las categorías');
+    loadSolicitudes();
+  }
+
+  function showPanel(panel) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`panel-${panel}`).classList.add('active');
+    const map = { 'mis-solicitudes': 0, 'nueva-solicitud': 1, 'profesionales': 2 };
+    document.querySelectorAll('.tab')[map[panel]].classList.add('active');
+    if (panel === 'profesionales') loadProfesionales();
+  }
+
+  async function loadSolicitudes() {
+    try {
+      const sol = await apiFetch('/api/mis-solicitudes');
+      const c = document.getElementById('solicitudes-lista');
+      if (!sol.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p>Aún no has publicado solicitudes</p><button class="btn btn-primary mt-16" onclick="showPanel('nueva-solicitud')">Publicar primera solicitud</button></div>`;
+        return;
+      }
+      c.innerHTML = sol.map(s => `
+        <div class="solicitud-card" id="solicitud-${s.id}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+            <div style="flex:1;">
+              <div class="solicitud-title">${escapeHtml(s.titulo)}</div>
+              <div class="solicitud-meta">
+                <span class="badge badge-primary">${escapeHtml(s.categoria)}</span>
+                &nbsp;📍 ${escapeHtml(s.comuna)}
+                &nbsp;📅 ${formatDate(s.created_at)}
+                ${s.presupuesto ? `&nbsp;💰 ${escapeHtml(s.presupuesto)}` : ''}
+              </div>
+              <div class="solicitud-desc">${escapeHtml(s.descripcion)}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
+              <span class="views-badge">👁️ ${s.vistas} vista${s.vistas !== 1 ? 's' : ''}</span>
+              ${s.vistas > 0 ? `<button class="btn btn-sm" style="background:#e3f2fd; color:var(--primary);" onclick="verProfesionalesInteresados(${s.id})">Ver interesados</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="eliminarSolicitud(${s.id})">Eliminar</button>
+            </div>
+          </div>
+          <div id="interesados-${s.id}" class="hidden" style="margin-top:12px;"></div>
+        </div>
+      `).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  async function handleNuevaSolicitud(e) {
+    e.preventDefault();
+    const btn = document.getElementById('solicitud-btn');
+    btn.disabled = true; btn.textContent = 'Publicando...';
+    try {
+      await apiFetch('/api/solicitudes', {
+        method: 'POST',
+        body: {
+          titulo: document.getElementById('s-titulo').value,
+          descripcion: document.getElementById('s-descripcion').value,
+          categoria: document.getElementById('s-categoria').value,
+          comuna: document.getElementById('s-comuna').value,
+          presupuesto: document.getElementById('s-presupuesto').value
+        }
+      });
+      showAlert(document.getElementById('form-alert'), '¡Solicitud publicada! Los profesionales ya pueden verla.', 'success');
+      e.target.reset();
+      loadSolicitudes();
+      setTimeout(() => showPanel('mis-solicitudes'), 2000);
+    } catch (err) {
+      showAlert(document.getElementById('form-alert'), err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Publicar solicitud';
+    }
+  }
+
+  async function verProfesionalesInteresados(solicitudId) {
+    const box = document.getElementById(`interesados-${solicitudId}`);
+    if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    box.innerHTML = '<div style="font-size:.85rem; color:var(--text-light);">Cargando...</div>';
+    try {
+      const profs = await apiFetch(`/api/solicitud/${solicitudId}/profesionales`);
+      if (!profs.length) { box.innerHTML = '<div style="font-size:.85rem; color:var(--text-light);">Nadie ha desbloqueado esta solicitud aún.</div>'; return; }
+      box.innerHTML = `
+        <div style="font-size:.8rem; font-weight:700; color:var(--text-light); margin-bottom:8px; text-transform:uppercase;">Profesionales interesados</div>
+        ${profs.map(p => `
+          <div style="background:#f9f9f9; border-radius:10px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:700; font-size:.92rem;">${escapeHtml(p.nombre)} <span class="badge badge-primary">${escapeHtml(p.categoria||'')}</span></div>
+              ${p.estrellas ? `<div style="color:#ffc107; font-size:.9rem;">${'★'.repeat(p.estrellas)}${'☆'.repeat(5-p.estrellas)} <span style="color:var(--text-light); font-size:.8rem;">${escapeHtml(p.comentario||'')}</span></div>` : ''}
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <a href="/profesional.html?id=${p.id}" target="_blank" class="btn btn-sm btn-outline">Ver perfil</a>
+              ${!p.estrellas ? `<button class="btn btn-sm btn-secondary" onclick="abrirEvaluar(${p.id},'${escapeHtml(p.nombre)}',${solicitudId})">⭐ Evaluar</button>` : '<span class="badge badge-success">Evaluado ✓</span>'}
+            </div>
+          </div>
+        `).join('')}
+      `;
+    } catch(err) { box.innerHTML = `<div style="color:red; font-size:.85rem;">${err.message}</div>`; }
+  }
+
+  let evalData = {};
+  function abrirEvaluar(profId, profNombre, solicitudId) {
+    evalData = { profId, solicitudId };
+    document.getElementById('eval-prof-nombre').textContent = profNombre;
+    document.getElementById('eval-solicitud-id').value = solicitudId;
+    document.getElementById('eval-prof-id').value = profId;
+    document.getElementById('eval-estrellas').value = '5';
+    document.getElementById('eval-comentario').value = '';
+    document.getElementById('modal-evaluar').classList.remove('hidden');
+  }
+
+  async function enviarEvaluacion() {
+    const estrellas = parseInt(document.getElementById('eval-estrellas').value);
+    const comentario = document.getElementById('eval-comentario').value;
+    const profId = parseInt(document.getElementById('eval-prof-id').value);
+    const solicitudId = parseInt(document.getElementById('eval-solicitud-id').value);
+    try {
+      await apiFetch(`/api/evaluar/${solicitudId}`, { method:'POST', body:{ estrellas, comentario, profesionalId: profId }});
+      document.getElementById('modal-evaluar').classList.add('hidden');
+      showAlert(document.getElementById('alert-global'), '⭐ ¡Evaluación enviada! Gracias por tu opinión.', 'success');
+      loadSolicitudes();
+    } catch(err) { showAlert(document.getElementById('alert-global'), err.message); }
+  }
+
+  async function eliminarSolicitud(id) {
+    if (!confirm('¿Seguro que deseas eliminar esta solicitud?')) return;
+    try {
+      await apiFetch(`/api/solicitudes/${id}`, { method: 'DELETE' });
+      showAlert(document.getElementById('alert-global'), 'Solicitud eliminada correctamente.', 'success');
+      loadSolicitudes();
+    } catch (err) {
+      showAlert(document.getElementById('alert-global'), err.message);
+    }
+  }
+
+  async function loadProfesionales() {
+    const cat = document.getElementById('filtro-cat-prof').value;
+    const url = cat ? `/api/profesionales?categoria=${encodeURIComponent(cat)}` : '/api/profesionales';
+    try {
+      const profs = await apiFetch(url);
+      const c = document.getElementById('profesionales-lista');
+      if (!profs.length) {
+        c.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">👷</div><p>No hay profesionales en esta categoría aún</p></div>`;
+        return;
+      }
+      c.innerHTML = profs.map(p => `
+        <div class="profesional-card">
+          <div class="profesional-avatar">${escapeHtml(p.nombre.charAt(0).toUpperCase())}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(p.nombre)}</div>
+            <span class="badge badge-primary">${escapeHtml(p.categoria)}</span>
+            ${p.descripcion ? `<div style="font-size:.83rem; color:var(--text-light); margin-top:7px; line-height:1.4;">${escapeHtml(p.descripcion)}</div>` : ''}
+            <div style="font-size:.78rem; color:var(--text-light); margin-top:7px;">Desde ${formatDate(p.created_at)}</div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  async function handleLogout() {
+    await apiFetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/';
+  }
+
+  init();
+</script>
+</body>
+</html>

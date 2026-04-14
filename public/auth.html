@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya - Ingresar</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    body { background: linear-gradient(135deg, #0f172a 0%, #1a2744 60%, #0f172a 100%); min-height: 100vh; display: flex; flex-direction: column; }
+    .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .auth-box { background: white; border-radius: 16px; padding: 38px; width: 100%; max-width: 470px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .auth-logo { text-align: center; margin-bottom: 22px; font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+    .tab-buttons { display: flex; background: #f0f4f8; border-radius: 10px; padding: 4px; margin-bottom: 26px; }
+    .tab-btn { flex: 1; padding: 9px; border: none; background: none; border-radius: 8px; font-size: .92rem; font-weight: 600; cursor: pointer; color: var(--text-light); transition: all .2s; font-family: inherit; }
+    .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .tipo-selector { display: flex; gap: 12px; margin-bottom: 18px; }
+    .tipo-btn { flex: 1; padding: 13px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center; transition: all .2s; background: white; font-family: inherit; }
+    .tipo-btn.selected { border-color: var(--primary); background: #e3f2fd; }
+    .tipo-icon { font-size: 1.7rem; display: block; margin-bottom: 4px; }
+    .tipo-label { font-size: .88rem; font-weight: 600; color: var(--text); }
+    .back-link { display: block; text-align: center; margin-top: 18px; color: rgba(255,255,255,.7); font-size: .88rem; text-decoration: none; }
+    .back-link:hover { color: white; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+</nav>
+
+<div class="auth-wrap">
+  <div>
+    <div class="auth-box">
+      <div class="auth-logo">🏘️ Soluciona <span class="brand-ya">Ya</span></div>
+
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('login')">Iniciar sesión</button>
+        <button class="tab-btn" onclick="showTab('registro')">Crear cuenta</button>
+      </div>
+
+      <div id="alert-container"></div>
+
+      <!-- LOGIN -->
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="login-email" placeholder="tu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-control" id="login-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;" id="login-btn">Iniciar sesión</button>
+        <p style="text-align:center; margin-top:14px; font-size:.88rem; color:var(--text-light);">
+          ¿No tienes cuenta? <a href="#" onclick="showTab('registro'); return false;" style="color:var(--primary);">Regístrate gratis</a>
+        </p>
+      </form>
+
+      <!-- REGISTRO -->
+      <form id="registro-form" class="hidden" onsubmit="handleRegistro(event)">
+        <div class="form-group">
+          <label class="form-label">Soy...</label>
+          <div class="tipo-selector">
+            <button type="button" class="tipo-btn selected" id="btn-cliente" onclick="selectTipo('cliente')">
+              <span class="tipo-icon">🔍</span>
+              <span class="tipo-label">Cliente</span>
+            </button>
+            <button type="button" class="tipo-btn" id="btn-profesional" onclick="selectTipo('profesional')">
+              <span class="tipo-icon">💼</span>
+              <span class="tipo-label">Profesional</span>
+            </button>
+          </div>
+          <input type="hidden" id="reg-tipo" value="cliente">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre completo *</label>
+          <input type="text" class="form-control" id="reg-nombre" placeholder="Juan Pérez" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input type="email" class="form-control" id="reg-email" placeholder="tu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono * <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">Ej: +56 9 1234 5678</span></label>
+          <input type="tel" class="form-control" id="reg-telefono" placeholder="+56 9 1234 5678" required oninput="validarTelefono(this)">
+          <div id="tel-error" style="color:var(--danger); font-size:.78rem; margin-top:4px; display:none;">⚠ Ingresa un teléfono chileno válido (ej: +56 9 1234 5678 o 9 1234 5678)</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña * <span style="font-weight:400; font-size:.82rem; color:var(--text-light);">(mínimo 6 caracteres)</span></label>
+          <input type="password" class="form-control" id="reg-password" placeholder="••••••••" minlength="6" required>
+        </div>
+
+        <!-- Solo profesionales -->
+        <div id="profesional-fields" class="hidden">
+          <div class="form-group">
+            <label class="form-label">Categoría de servicio *</label>
+            <select class="form-control" id="reg-categoria"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción breve <span style="font-weight:400; font-size:.82rem; color:var(--text-light);">(opcional)</span></label>
+            <textarea class="form-control" id="reg-descripcion" placeholder="Cuéntanos tu experiencia y especialidad..." style="min-height:78px;"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:6px;" id="reg-btn">Crear cuenta</button>
+        <p style="text-align:center; margin-top:14px; font-size:.88rem; color:var(--text-light);">
+          ¿Ya tienes cuenta? <a href="#" onclick="showTab('login'); return false;" style="color:var(--primary);">Inicia sesión</a>
+        </p>
+      </form>
+    </div>
+    <a href="/" class="back-link">← Volver al inicio</a>
+  </div>
+</div>
+
+<script src="/utils.js"></script>
+<script>
+  // Populate categories
+  const catSel = document.getElementById('reg-categoria');
+  CATEGORIAS.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    catSel.appendChild(o);
+  });
+
+  // URL params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tipo') === 'profesional') { showTab('registro'); selectTipo('profesional'); }
+  else if (params.get('tab') === 'registro') { showTab('registro'); }
+
+  function showTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+    document.getElementById('registro-form').classList.toggle('hidden', isLogin);
+    document.querySelectorAll('.tab-btn')[0].classList.toggle('active', isLogin);
+    document.querySelectorAll('.tab-btn')[1].classList.toggle('active', !isLogin);
+    document.getElementById('alert-container').innerHTML = '';
+  }
+
+  function selectTipo(tipo) {
+    document.getElementById('reg-tipo').value = tipo;
+    document.getElementById('btn-cliente').classList.toggle('selected', tipo === 'cliente');
+    document.getElementById('btn-profesional').classList.toggle('selected', tipo === 'profesional');
+    const pf = document.getElementById('profesional-fields');
+    pf.classList.toggle('hidden', tipo !== 'profesional');
+    document.getElementById('reg-categoria').required = (tipo === 'profesional');
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Ingresando...';
+    try {
+      const data = await apiFetch('/api/auth/login', {
+        method: 'POST',
+        body: { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value }
+      });
+      window.location.href = data.tipo === 'cliente' ? '/dashboard-cliente.html' : '/dashboard-profesional.html';
+    } catch (err) {
+      showAlert(document.getElementById('alert-container'), err.message);
+      btn.disabled = false; btn.textContent = 'Iniciar sesión';
+    }
+  }
+
+  function validarTelefono(input) {
+    const val = input.value.replace(/\s/g, '');
+    // Acepta: +569XXXXXXXX, 569XXXXXXXX, 09XXXXXXXX, 9XXXXXXXX (8 dígitos tras el 9)
+    const ok = /^(\+?56)?0?9\d{8}$/.test(val);
+    const err = document.getElementById('tel-error');
+    err.style.display = (!ok && val.length > 3) ? 'block' : 'none';
+    input.style.borderColor = (!ok && val.length > 3) ? 'var(--danger)' : '';
+    return ok;
+  }
+
+  async function handleRegistro(e) {
+    e.preventDefault();
+    const telInput = document.getElementById('reg-telefono');
+    if (!validarTelefono(telInput)) {
+      document.getElementById('tel-error').style.display = 'block';
+      telInput.focus();
+      return;
+    }
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true; btn.textContent = 'Creando cuenta...';
+    const tipo = document.getElementById('reg-tipo').value;
+    try {
+      const data = await apiFetch('/api/auth/registro', {
+        method: 'POST',
+        body: {
+          nombre: document.getElementById('reg-nombre').value,
+          email: document.getElementById('reg-email').value,
+          password: document.getElementById('reg-password').value,
+          telefono: document.getElementById('reg-telefono').value,
+          tipo,
+          categoria: tipo === 'profesional' ? document.getElementById('reg-categoria').value : undefined,
+          descripcion: tipo === 'profesional' ? document.getElementById('reg-descripcion').value : undefined
+        }
+      });
+      window.location.href = data.tipo === 'cliente' ? '/dashboard-cliente.html' : '/dashboard-profesional.html';
+    } catch (err) {
+      showAlert(document.getElementById('alert-container'), err.message);
+      btn.disabled = false; btn.textContent = 'Crear cuenta';
+    }
+  }
+
+  // Redirect if already logged in
+  checkAuth().then(u => {
+    if (u) window.location.href = u.tipo === 'cliente' ? '/dashboard-cliente.html' : '/dashboard-profesional.html';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya - Panel Profesional</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .dash-header { background: linear-gradient(135deg, #0f172a, #1a2744); color: white; padding: 20px 24px; }
+    .dash-header h1 { font-size: 1.35rem; margin-bottom: 3px; }
+    .dash-header p { opacity: .85; font-size: .88rem; }
+    .saldo-big { font-size: 1.6rem; font-weight: 800; }
+    .tab.active { color: #c9920a !important; border-bottom-color: #c9920a !important; }
+    .saldo-pill { background: rgba(255,255,255,.2); color: white; padding: 6px 14px; border-radius: 50px; font-size: .92rem; font-weight: 700; }
+    .filter-row { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; align-items: flex-end; }
+    .filter-row > div { display: flex; flex-direction: column; gap: 4px; }
+    .filter-label { font-size: .78rem; font-weight: 600; color: var(--text-light); }
+    .plan-banner { background: linear-gradient(135deg,#fff8e1,#fff3cd); border: 2px solid #ffe082; border-radius: 14px; padding: 22px 24px; margin-bottom: 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .plan-banner.activo { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-color: #81c784; }
+    .plan-icon { font-size: 2.5rem; flex-shrink: 0; }
+    .foto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 12px; margin-top: 16px; }
+    .foto-card { border-radius: 10px; overflow: hidden; position: relative; background: #f0f4f8; aspect-ratio: 1; }
+    .foto-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .foto-titulo { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.55); color: white; font-size: .75rem; padding: 5px 8px; }
+    .foto-delete { position: absolute; top: 6px; right: 6px; background: rgba(198,40,40,.85); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: .85rem; display: flex; align-items: center; justify-content: center; }
+    .upload-zone { border: 2px dashed var(--secondary); border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; transition: all .2s; background: #f9fff9; }
+    .upload-zone:hover { background: #e8f5e9; }
+    /* Plan cards */
+    .plan-card { background: white; border-radius: 16px; padding: 28px 24px; box-shadow: var(--shadow); text-align: center; position: relative; transition: box-shadow .2s; border: 2px solid var(--border); }
+    .plan-card.popular { border-color: var(--secondary); }
+    .plan-card.elite { border-color: #b8860b; background: linear-gradient(135deg,#fff8e1,#fffef8); }
+    .plan-card:hover { box-shadow: var(--shadow-hover); }
+    .plan-price { font-size: 2.1rem; font-weight: 800; line-height: 1.1; margin: 8px 0 2px; }
+    .plan-period { font-size: .82rem; color: var(--text-light); margin-bottom: 20px; }
+    .plan-feature { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: .875rem; text-align: left; }
+    .plan-feature:last-child { border-bottom: none; }
+    .badge-pro   { background: #e8f0fe; color: #1a56db; padding: 2px 9px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+    .badge-elite { background: #fef3c7; color: #92400e; padding: 2px 9px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+    .badge-verificado { background: linear-gradient(135deg,#b8860b,#c9920a); color: white; padding: 2px 9px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+    /* Comunas grid */
+    .comuna-btn { padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; font-size: .83rem; font-weight: 600; background: white; transition: all .2s; text-align: left; }
+    .comuna-btn.selected { border-color: var(--secondary); background: #fef9ec; color: var(--secondary); }
+    .comunas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px,1fr)); gap: 8px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" style="background:#1a2744;">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <div class="saldo-pill">💰 <span id="nav-saldo">$0</span></div>
+    <span id="user-plan-badge" style="display:none;"></span>
+    <span id="user-name" style="color:rgba(255,255,255,.85); font-size:.88rem;"></span>
+    <button onclick="handleLogout()" class="btn btn-sm" style="background:rgba(255,255,255,.2); color:white;">Salir</button>
+  </div>
+</nav>
+
+<div class="dash-header">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1>Panel de Profesional</h1>
+      <p>Encuentra trabajos en las 31 comunas de la Sexta Región</p>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:.8rem; opacity:.8; margin-bottom:2px;">Saldo disponible</div>
+      <div class="saldo-big" id="header-saldo">$0</div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-tabs">
+  <div class="tab active" onclick="showPanel('solicitudes')">🔍 Solicitudes</div>
+  <div class="tab" onclick="showPanel('desbloqueadas')">📞 Seguimiento</div>
+  <div class="tab" onclick="showPanel('perfil')">📸 Perfil y fotos</div>
+  <div class="tab" onclick="showPanel('sitio')">🌐 Mi sitio web</div>
+  <div class="tab" onclick="showPanel('planes')">💎 Mi Plan</div>
+  <div class="tab" onclick="showPanel('saldo')">💰 Mi saldo</div>
+</div>
+
+<div id="alert-global" style="max-width:1000px; margin:14px auto 0; padding:0 24px;"></div>
+
+<!-- SOLICITUDES -->
+<div class="tab-panel active" id="panel-solicitudes">
+  <div class="mb-16">
+    <h2 class="section-title">Solicitudes disponibles</h2>
+    <p class="section-subtitle" id="solicitudes-subtitle">Clientes buscando profesionales en la Sexta Región</p>
+  </div>
+
+  <div class="filter-row">
+    <div>
+      <span class="filter-label">Categoría</span>
+      <select class="form-control" id="filtro-cat" style="min-width:170px;" onchange="loadSolicitudes()"></select>
+    </div>
+    <div>
+      <span class="filter-label">Comuna</span>
+      <select class="form-control" id="filtro-comuna" style="min-width:155px;" onchange="loadSolicitudes()"></select>
+    </div>
+    <div style="flex:1; min-width:200px;">
+      <span class="filter-label">Buscar</span>
+      <input type="text" class="form-control" id="filtro-buscar" placeholder="Buscar por título o descripción..." oninput="debounce()">
+    </div>
+  </div>
+
+  <div id="costo-lead-hint" class="alert alert-warning" style="font-size:.85rem; margin-bottom:16px;">
+    💡 Desbloquea el contacto de un cliente por solo <strong id="costo-lead-txt">$1.000 CLP</strong> — se descuenta de tu saldo.
+  </div>
+
+  <div id="solicitudes-lista">
+    <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando solicitudes...</p></div>
+  </div>
+</div>
+
+<!-- SEGUIMIENTO DE CONTACTOS -->
+<div class="tab-panel" id="panel-desbloqueadas">
+  <div class="mb-16">
+    <h2 class="section-title">Seguimiento de contactos</h2>
+    <p class="section-subtitle">Gestiona el estado de cada cliente que has contactado</p>
+  </div>
+  <div id="desbloqueadas-lista">
+    <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+  </div>
+</div>
+
+<!-- MINI SITIO WEB -->
+<div class="tab-panel" id="panel-sitio">
+  <div class="mb-16">
+    <h2 class="section-title">🌐 Mi sitio web profesional</h2>
+    <p class="section-subtitle">Configura tu página pública para que los clientes te conozcan</p>
+  </div>
+
+  <div id="sitio-alert"></div>
+
+  <div id="sitio-link-box" class="alert alert-success hidden" style="margin-bottom:18px;">
+    ✅ Tu sitio está <strong>publicado</strong> — <a id="sitio-link" href="#" target="_blank" style="color:var(--secondary); font-weight:700;">Ver mi sitio público →</a>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+      <h3 style="font-weight:700;">Estado del sitio</h3>
+      <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600;">
+        <span style="font-size:.88rem; color:var(--text-light);">Oculto</span>
+        <div style="position:relative; width:46px; height:24px;">
+          <input type="checkbox" id="sitio-activo-toggle" style="opacity:0; width:0; height:0; position:absolute;"
+            onchange="toggleSitio(this.checked)">
+          <div id="toggle-track" style="position:absolute; inset:0; background:#ccc; border-radius:12px; transition:.3s; cursor:pointer;" onclick="document.getElementById('sitio-activo-toggle').click()"></div>
+          <div id="toggle-thumb" style="position:absolute; left:2px; top:2px; width:20px; height:20px; background:white; border-radius:50%; transition:.3s; pointer-events:none;"></div>
+        </div>
+        <span style="font-size:.88rem; color:var(--text-light);">Publicado</span>
+      </label>
+    </div>
+    <p style="font-size:.84rem; color:var(--text-light);">Al publicar tu sitio, cualquier persona con el enlace puede ver tu perfil, fotos y evaluaciones.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="font-weight:700; margin-bottom:16px;">📋 Mi CV / Información profesional</h3>
+    <div class="form-group">
+      <label class="form-label">💼 Experiencia laboral</label>
+      <textarea class="form-control" id="cv-experiencia" style="min-height:100px;" placeholder="Ej: 10 años como electricista en Rancagua. Trabajé en empresas constructoras y también de forma independiente. Certificación SEC vigente."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">🎓 Educación y certificaciones</label>
+      <textarea class="form-control" id="cv-educacion" placeholder="Ej: Técnico en Electricidad — INACAP Rancagua (2010). Certificación SEC Clase A."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">⚡ Habilidades <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(separa con comas)</span></label>
+      <input type="text" class="form-control" id="cv-habilidades" placeholder="Ej: Instalaciones eléctricas, Tableros, Iluminación LED, Emergencias 24h">
+    </div>
+    <div class="form-group">
+      <label class="form-label">🕐 Disponibilidad</label>
+      <input type="text" class="form-control" id="cv-disponibilidad" placeholder="Ej: Lunes a Sábado 8:00 - 20:00">
+    </div>
+    <button class="btn btn-primary" onclick="guardarCV()">💾 Guardar cambios</button>
+  </div>
+</div>
+
+<!-- PLANES DE SUSCRIPCIÓN -->
+<div class="tab-panel" id="panel-planes">
+  <div class="mb-16">
+    <h2 class="section-title">💎 Planes de suscripción</h2>
+    <p class="section-subtitle">Más comunas, leads más baratos y mayor visibilidad para tu negocio</p>
+  </div>
+
+  <div id="plan-alert" style="margin-bottom:14px;"></div>
+  <div id="current-plan-box" style="margin-bottom:24px;"></div>
+
+  <!-- Tarjetas de planes -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; margin-bottom:28px;">
+    <!-- Básico -->
+    <div class="plan-card" id="card-basico">
+      <div style="font-size:1.1rem; font-weight:800; margin-bottom:4px;">Plan Básico</div>
+      <div class="plan-price">Gratis</div>
+      <div class="plan-period">para siempre</div>
+      <div style="margin:16px 0;">
+        <div class="plan-feature">✅ Perfil público</div>
+        <div class="plan-feature">💳 Pago por lead: <strong>$1.000</strong></div>
+        <div class="plan-feature">📍 Máx. 3 comunas</div>
+        <div class="plan-feature" style="color:var(--text-light);">✗ Sin prioridad en búsqueda</div>
+      </div>
+      <button class="btn w-full" id="btn-basico" disabled style="background:#f0f4f8; color:var(--text);">Plan actual</button>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan-card popular" id="card-pro">
+      <div style="position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--secondary); color:white; padding:3px 18px; border-radius:20px; font-size:.74rem; font-weight:700; white-space:nowrap;">MÁS POPULAR</div>
+      <div style="font-size:1.1rem; font-weight:800; margin-bottom:4px;">Plan Pro</div>
+      <div class="plan-price" style="color:var(--secondary);">$9.990<span style="font-size:1rem; font-weight:400;">/mes</span></div>
+      <div class="plan-period">CLP · cancela cuando quieras</div>
+      <div style="margin:16px 0;">
+        <div class="plan-feature">🔥 50% dcto en leads (<strong>$500</strong>)</div>
+        <div class="plan-feature">📍 Hasta <strong>10 comunas</strong></div>
+        <div class="plan-feature">⭐ Perfil destacado</div>
+        <div class="plan-feature">🏷️ Badge <span class="badge-pro" style="margin-left:4px;">PRO</span> visible</div>
+      </div>
+      <button class="btn btn-secondary w-full" id="btn-pro" onclick="suscribir('pro')">Suscribir al Plan Pro</button>
+    </div>
+
+    <!-- Élite -->
+    <div class="plan-card elite" id="card-elite">
+      <div style="font-size:1.1rem; font-weight:800; margin-bottom:4px; color:#78350f;">Plan Élite</div>
+      <div class="plan-price" style="color:#b8860b;">$24.990<span style="font-size:1rem; font-weight:400;">/mes</span></div>
+      <div class="plan-period" style="color:#92400e;">CLP · factura disponible</div>
+      <div style="margin:16px 0;">
+        <div class="plan-feature" style="border-color:#f6d860;">🚀 Leads <strong>ilimitados y gratis</strong></div>
+        <div class="plan-feature" style="border-color:#f6d860;">📍 <strong>Todas las comunas</strong> (31)</div>
+        <div class="plan-feature" style="border-color:#f6d860;">🥇 1er lugar en búsqueda</div>
+        <div class="plan-feature" style="border-color:#f6d860;">👑 Badge <span class="badge-elite" style="margin-left:4px;">ÉLITE</span> + verificación</div>
+      </div>
+      <button class="btn w-full" id="btn-elite" onclick="suscribir('elite')" style="background:#b8860b; color:white;">Suscribir al Plan Élite</button>
+    </div>
+  </div>
+
+  <!-- Selector de comunas -->
+  <div class="card" id="comunas-selector-card">
+    <h3 style="font-weight:700; margin-bottom:6px;">📍 Mis comunas de cobertura</h3>
+    <p style="font-size:.85rem; color:var(--text-light); margin-bottom:4px;" id="comunas-hint">Solo verás solicitudes de las comunas que selecciones.</p>
+    <p style="font-size:.82rem; color:var(--secondary); font-weight:600; margin-bottom:14px;" id="comunas-counter"></p>
+    <div id="comunas-alert" style="margin-bottom:10px;"></div>
+    <div class="comunas-grid" id="comunas-grid"></div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="guardarComunas()">💾 Guardar comunas</button>
+  </div>
+</div>
+
+<!-- MI SALDO -->
+<div class="tab-panel" id="panel-saldo">
+  <div class="grid-2" style="margin-bottom:22px;">
+    <div class="card" style="text-align:center; border-top:4px solid var(--secondary);">
+      <div style="font-size:.88rem; color:var(--text-light); margin-bottom:8px;">Saldo actual</div>
+      <div style="font-size:2.4rem; font-weight:800; color:var(--secondary);" id="saldo-display">$0</div>
+      <div style="font-size:.8rem; color:var(--text-light); margin-top:6px;">= <span id="desbloqueos-posibles">0</span> contacto(s) disponible(s)</div>
+    </div>
+    <div class="card">
+      <div style="font-size:.9rem; font-weight:700; margin-bottom:12px;">¿Cómo funciona?</div>
+      <div style="font-size:.85rem; color:var(--text-light); line-height:1.8;" id="como-funciona-txt">
+        <div>💰 <strong>$1.000 CLP</strong> = 1 contacto de cliente</div>
+        <div>👁️ Accedes al teléfono y email del cliente</div>
+        <div>📞 Lo contactas directamente para cotizar</div>
+        <div>✅ Sin intermediarios, sin comisiones</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <h3 style="font-weight:700; margin-bottom:6px;">💳 Recargar saldo por transferencia</h3>
+    <p style="font-size:.85rem; color:var(--text-light); margin-bottom:18px;">Transfiere el monto que quieras y se te acreditará en 24 horas hábiles.</p>
+
+    <div style="background:#f0f4f8; border-radius:12px; padding:18px; margin-bottom:18px;">
+      <div style="font-weight:700; margin-bottom:12px; color:var(--primary);">📋 Datos para transferir</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:.9rem; line-height:1.9;">
+        <span style="color:var(--text-light); font-weight:600;">Banco</span>       <strong>Banco Ripley</strong>
+        <span style="color:var(--text-light); font-weight:600;">Tipo</span>        <strong>Cuenta Vista</strong>
+        <span style="color:var(--text-light); font-weight:600;">N° Cuenta</span>   <strong>4041698702</strong>
+        <span style="color:var(--text-light); font-weight:600;">RUT</span>         <strong>13.053.671-9</strong>
+        <span style="color:var(--text-light); font-weight:600;">Nombre</span>      <strong>María Graciela Lira Aguirre</strong>
+        <span style="color:var(--text-light); font-weight:600;">Email</span>       <strong>gracielalira@gmail.com</strong>
+      </div>
+    </div>
+
+    <div style="font-weight:600; font-size:.88rem; margin-bottom:10px; color:var(--text);">Montos sugeridos:</div>
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div style="background:#e8f5e9; border-radius:10px; padding:12px; text-align:center; font-size:.88rem;"><strong style="color:var(--secondary);">$5.000</strong><br><span style="color:var(--text-light);">5 contactos</span></div>
+      <div style="background:#e8f5e9; border-radius:10px; padding:12px; text-align:center; font-size:.88rem;"><strong style="color:var(--secondary);">$10.000</strong><br><span style="color:var(--text-light);">10 contactos</span></div>
+      <div style="background:#e8f5e9; border-radius:10px; padding:12px; text-align:center; font-size:.88rem;"><strong style="color:var(--secondary);">$20.000</strong><br><span style="color:var(--text-light);">20 contactos</span></div>
+      <div style="background:#e3f2fd; border-radius:10px; padding:12px; text-align:center; font-size:.88rem;"><strong style="color:var(--primary);">$9.990</strong><br><span style="color:var(--text-light);">Plan Pro/mes</span></div>
+    </div>
+
+    <div style="background:#fff8e1; border:1px solid #ffe082; border-radius:10px; padding:12px; font-size:.83rem; color:#5d4037;">
+      ⚠️ <strong>Importante:</strong> Al transferir, incluye tu email registrado en el comentario/glosa para identificar tu pago.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-weight:700; margin-bottom:14px;">Últimas transacciones</h3>
+    <div id="transacciones-lista">
+      <div class="empty-state" style="padding:20px;"><p>Sin transacciones aún</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PERFIL Y FOTOS -->
+<div class="tab-panel" id="panel-perfil">
+
+  <!-- Banner plan -->
+  <div id="plan-banner" class="plan-banner">
+    <div class="plan-icon">⭐</div>
+    <div style="flex:1;">
+      <div style="font-weight:800; font-size:1.1rem; color:#5d4037; margin-bottom:4px;">Activa un plan y sube fotos de tus trabajos</div>
+      <div style="font-size:.88rem; color:#6d4c41; line-height:1.6;">
+        Con el <strong>Plan Pro o Élite</strong> puedes subir hasta 10 fotos, tener perfil destacado y más beneficios.
+      </div>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <span style="background:white; border-radius:8px; padding:5px 12px; font-size:.82rem; font-weight:600; color:#5d4037;">📸 Fotos de tus trabajos</span>
+        <span style="background:white; border-radius:8px; padding:5px 12px; font-size:.82rem; font-weight:600; color:#5d4037;">✅ Perfil destacado</span>
+        <span style="background:white; border-radius:8px; padding:5px 12px; font-size:.82rem; font-weight:600; color:#5d4037;">🔍 Más visible para clientes</span>
+      </div>
+    </div>
+    <button id="btn-activar-plan" class="btn btn-secondary" style="border-radius:50px; padding:12px 24px; white-space:nowrap;" onclick="showPanel('planes')">
+      Ver planes
+    </button>
+  </div>
+
+  <!-- Descripción -->
+  <div class="card" style="margin-bottom:20px;">
+    <h3 style="font-weight:700; margin-bottom:14px;">📝 Mi descripción</h3>
+    <div id="desc-alert"></div>
+    <div class="form-group">
+      <label class="form-label">Cuéntales a los clientes qué haces y tu experiencia</label>
+      <textarea class="form-control" id="perfil-descripcion" style="min-height:110px;" placeholder="Ej: Soy electricista con 10 años de experiencia en instalaciones residenciales y comerciales en Rancagua. Trabajo con certificación SEC..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="guardarDescripcion()">Guardar descripción</button>
+  </div>
+
+  <!-- Fotos -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <h3 style="font-weight:700;">📸 Fotos de mis trabajos</h3>
+      <span style="font-size:.82rem; color:var(--text-light);" id="foto-contador">0 / 10 fotos</span>
+    </div>
+
+    <div id="fotos-bloqueado" class="hidden">
+      <div class="alert alert-warning" style="font-size:.88rem;">
+        🔒 Debes activar el <strong>Plan Pro o Élite</strong> para subir fotos de tus trabajos.
+        <button class="btn btn-secondary btn-sm" style="margin-left:10px;" onclick="showPanel('planes')">Ver planes</button>
+      </div>
+    </div>
+
+    <div id="fotos-activo" class="hidden">
+      <div id="foto-alert"></div>
+      <label class="upload-zone" id="upload-zone">
+        <div style="font-size:2rem; margin-bottom:8px;">📷</div>
+        <div style="font-weight:700; margin-bottom:4px;">Haz clic para subir una foto</div>
+        <div style="font-size:.82rem; color:var(--text-light);">JPG, PNG — máximo 5 MB por foto</div>
+        <input type="file" id="foto-input" accept="image/*" style="display:none;" onchange="subirFoto()">
+      </label>
+      <div class="foto-grid" id="foto-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DESBLOQUEO -->
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">🔓 Desbloquear contacto</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-info" style="background:#f5f7fa; border-radius:8px; padding:14px; margin-bottom:16px;"></div>
+    <div id="modal-costo-box" class="alert alert-warning" style="font-size:.85rem;"></div>
+    <div id="modal-alert"></div>
+    <div style="display:flex; gap:12px; margin-top:16px;">
+      <button class="btn btn-outline w-full" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary w-full" id="confirm-btn" onclick="confirmarDesbloqueo()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/utils.js"></script>
+<script>
+  let currentUser = null;
+  let solicitudToUnlock = null;
+  let selectedComunas = [];
+  let maxComunasUser = 3;
+  let debounceTimer;
+
+  async function init() {
+    const user = await checkAuth();
+    if (!user) { window.location.href = '/auth.html'; return; }
+    if (user.tipo !== 'profesional') { window.location.href = '/dashboard-cliente.html'; return; }
+    currentUser = user;
+    document.getElementById('user-name').textContent = user.nombre;
+    setSaldo(user.saldo);
+    mostrarBadgePlan(user.plan_tipo, user.verificado);
+    actualizarCostoLead(user.plan_tipo);
+    populateSelect(document.getElementById('filtro-cat'), CATEGORIAS, 'Todas las categorías');
+    populateSelect(document.getElementById('filtro-comuna'), COMUNAS, 'Todas las comunas');
+    loadSolicitudes();
+    if (user.perfil_descripcion) document.getElementById('perfil-descripcion').value = user.descripcion || '';
+  }
+
+  function mostrarBadgePlan(tipo, verificado) {
+    const el = document.getElementById('user-plan-badge');
+    if (tipo === 'pro') {
+      el.style.display = 'inline-block';
+      el.innerHTML = '<span class="badge-pro">PRO</span>';
+    } else if (tipo === 'elite') {
+      el.style.display = 'inline-block';
+      el.innerHTML = verificado
+        ? '<span class="badge-elite">ÉLITE</span> <span class="badge-verificado">✓ Verificado</span>'
+        : '<span class="badge-elite">ÉLITE</span>';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  function actualizarCostoLead(tipo) {
+    const costos = { basico: 1000, pro: 500, elite: 0 };
+    const costo = costos[tipo] || 1000;
+    const txtEl = document.getElementById('costo-lead-txt');
+    const hintEl = document.getElementById('costo-lead-hint');
+    if (tipo === 'elite') {
+      txtEl.textContent = 'GRATIS (Plan Élite)';
+      hintEl.className = 'alert alert-success';
+      hintEl.innerHTML = '🚀 <strong>Plan Élite:</strong> Todos los contactos son <strong>gratuitos e ilimitados</strong> para ti.';
+    } else if (tipo === 'pro') {
+      txtEl.textContent = '$500 CLP (50% dcto, Plan Pro)';
+      hintEl.innerHTML = '🔥 <strong>Plan Pro:</strong> Desbloquea contactos a <strong>$500 CLP</strong> (50% de descuento).';
+    } else {
+      txtEl.textContent = '$1.000 CLP';
+    }
+    // Actualizar el panel Mi saldo
+    const comoFunciona = document.getElementById('como-funciona-txt');
+    if (tipo === 'elite') {
+      comoFunciona.innerHTML = `<div>🚀 <strong>Leads 100% gratis</strong> — Plan Élite</div><div>👁️ Accedes al teléfono y email del cliente</div><div>📞 Lo contactas directamente para cotizar</div><div>✅ Sin intermediarios, sin comisiones</div>`;
+    } else if (tipo === 'pro') {
+      comoFunciona.innerHTML = `<div>💰 <strong>$500 CLP</strong> = 1 contacto (50% dcto Plan Pro)</div><div>👁️ Accedes al teléfono y email del cliente</div><div>📞 Lo contactas directamente para cotizar</div><div>✅ Sin intermediarios, sin comisiones</div>`;
+    }
+  }
+
+  function setSaldo(saldo) {
+    const f = formatMoney(saldo);
+    document.getElementById('nav-saldo').textContent = f;
+    document.getElementById('header-saldo').textContent = f;
+    document.getElementById('saldo-display').textContent = f;
+    const costoLead = { basico: 1000, pro: 500, elite: 0 }[currentUser?.plan_tipo || 'basico'] || 1000;
+    document.getElementById('desbloqueos-posibles').textContent = costoLead > 0 ? Math.floor(saldo / costoLead) : '∞';
+    if (currentUser) currentUser.saldo = saldo;
+  }
+
+  function actualizarBannerPlan(planTipo, planExpira) {
+    const banner = document.getElementById('plan-banner');
+    const bloqueado = document.getElementById('fotos-bloqueado');
+    const activo = document.getElementById('fotos-activo');
+    if (planTipo === 'pro' || planTipo === 'elite') {
+      banner.classList.add('activo');
+      const label = planTipo === 'pro' ? 'Plan Pro <span class="badge-pro" style="margin-left:6px;">PRO</span>' : 'Plan Élite <span class="badge-elite" style="margin-left:6px;">ÉLITE</span>';
+      const expiraStr = planExpira ? `Válido hasta: ${formatDate(planExpira)}` : '';
+      banner.innerHTML = `
+        <div class="plan-icon">${planTipo === 'elite' ? '👑' : '⭐'}</div>
+        <div style="flex:1;">
+          <div style="font-weight:800; font-size:1.1rem; color:#1b5e20; margin-bottom:4px;">${label} Activo</div>
+          <div style="font-size:.88rem; color:#2e7d32; line-height:1.6;">Puedes subir hasta <strong>10 fotos</strong> y tienes perfil destacado. ${expiraStr}</div>
+        </div>
+        <span class="badge badge-success" style="font-size:.85rem; padding:7px 14px;">Plan activo ✓</span>
+      `;
+      bloqueado.classList.add('hidden');
+      activo.classList.remove('hidden');
+      loadFotos();
+    } else {
+      bloqueado.classList.remove('hidden');
+      activo.classList.add('hidden');
+    }
+  }
+
+  function showPanel(panel) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`panel-${panel}`).classList.add('active');
+    const idx = { solicitudes: 0, desbloqueadas: 1, sitio: 2, planes: 4, saldo: 5, perfil: 3 };
+    // Map panel name to tab index
+    const tabOrder = ['solicitudes','desbloqueadas','perfil','sitio','planes','saldo'];
+    const tabIdx = tabOrder.indexOf(panel);
+    if (tabIdx >= 0) document.querySelectorAll('.tab')[tabIdx].classList.add('active');
+    if (panel === 'desbloqueadas') loadDesbloqueadas();
+    if (panel === 'saldo') loadTransacciones();
+    if (panel === 'solicitudes') loadSolicitudes();
+    if (panel === 'perfil') actualizarBannerPlan(currentUser.plan_tipo, currentUser.plan_expira);
+    if (panel === 'sitio') loadSitio();
+    if (panel === 'planes') loadPlanes();
+  }
+
+  function debounce() { clearTimeout(debounceTimer); debounceTimer = setTimeout(loadSolicitudes, 380); }
+
+  async function loadSolicitudes() {
+    const cat = document.getElementById('filtro-cat').value;
+    const com = document.getElementById('filtro-comuna').value;
+    const bus = document.getElementById('filtro-buscar').value;
+    let url = '/api/solicitudes?';
+    if (cat) url += `categoria=${encodeURIComponent(cat)}&`;
+    if (com) url += `comuna=${encodeURIComponent(com)}&`;
+    if (bus) url += `buscar=${encodeURIComponent(bus)}&`;
+
+    // Subtítulo de cobertura
+    if (currentUser) {
+      const tipo = currentUser.plan_tipo;
+      const sub = document.getElementById('solicitudes-subtitle');
+      if (tipo === 'elite') {
+        sub.textContent = 'Ves solicitudes de las 31 comunas de la Sexta Región (Plan Élite)';
+      } else if (currentUser.comunas_list && currentUser.comunas_list.length) {
+        sub.textContent = `Tus comunas: ${currentUser.comunas_list.join(', ')}`;
+      }
+    }
+
+    try {
+      const sol = await apiFetch(url);
+      const c = document.getElementById('solicitudes-lista');
+      if (!sol.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p>No hay solicitudes con esos filtros</p><button class="btn btn-outline mt-16" onclick="showPanel('planes')">Ampliar comunas →</button></div>`;
+        return;
+      }
+      const costos = { basico: 1000, pro: 500, elite: 0 };
+      const costo = costos[currentUser?.plan_tipo || 'basico'] || 1000;
+      const costoLabel = costo === 0 ? 'Gratis' : formatMoney(costo);
+      c.innerHTML = sol.map(s => `
+        <div class="solicitud-card ${s.desbloqueado ? 'desbloqueada' : ''}" id="card-${s.id}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:1rem; font-weight:700; margin-bottom:6px;">${escapeHtml(s.titulo)}</div>
+              <div style="font-size:.82rem; color:var(--text-light); margin-bottom:8px;">
+                <span class="badge badge-primary">${escapeHtml(s.categoria)}</span>
+                &nbsp;📍 ${escapeHtml(s.comuna)}
+                &nbsp;📅 ${formatDate(s.created_at)}
+                ${s.presupuesto ? `&nbsp;💰 ${escapeHtml(s.presupuesto)}` : ''}
+              </div>
+              <div style="font-size:.88rem; color:var(--text-light); line-height:1.5;">${escapeHtml(s.descripcion)}</div>
+            </div>
+            <div style="flex-shrink:0; text-align:center;">
+              ${s.desbloqueado
+                ? `<span class="badge badge-success" style="font-size:.8rem; padding:5px 12px;">✓ Contacto visto</span>`
+                : `<button class="btn btn-primary btn-sm" style="white-space:nowrap;" onclick="abrirModal(${s.id}, '${escapeHtml(s.titulo).replace(/'/g, "\\'")}')">
+                    🔓 Ver contacto<br><small style="font-weight:400;">${costoLabel}</small></button>`
+              }
+            </div>
+          </div>
+          ${s.desbloqueado ? `
+            <div class="contact-box" id="cbox-${s.id}">
+              <strong style="color:var(--secondary);">✅ Contacto desbloqueado</strong><br>
+              <span id="cinfo-${s.id}">Cargando...</span>
+            </div>` : ''}
+        </div>
+      `).join('');
+
+      sol.filter(s => s.desbloqueado).forEach(s => fetchContacto(s.id, `cinfo-${s.id}`));
+    } catch (err) { console.error(err); }
+  }
+
+  async function fetchContacto(solicitudId, elId) {
+    try {
+      const c = await apiFetch(`/api/contacto/${solicitudId}`);
+      const el = document.getElementById(elId);
+      if (el) el.innerHTML = `
+        <strong>👤 ${escapeHtml(c.nombre)}</strong><br>
+        📞 <a href="tel:${escapeHtml(c.telefono)}">${escapeHtml(c.telefono)}</a><br>
+        ✉️ <a href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>
+      `;
+    } catch {}
+  }
+
+  const ESTADOS = {
+    nuevo:         { label: '🆕 Nuevo',           color: '#e3f2fd', text: '#1565c0' },
+    contactado:    { label: '📞 Contactado',       color: '#e8f5e9', text: '#2e7d32' },
+    cotizado:      { label: '📄 Cotizado',         color: '#fff8e1', text: '#e65100' },
+    en_trabajo:    { label: '🔨 En trabajo',       color: '#fce4ec', text: '#c2185b' },
+    finalizado:    { label: '✅ Finalizado',       color: '#e8f5e9', text: '#1b5e20' },
+    sin_respuesta: { label: '😶 Sin respuesta',    color: '#f5f5f5', text: '#757575' }
+  };
+
+  async function loadDesbloqueadas() {
+    try {
+      const contactos = await apiFetch('/api/mis-contactos-detalle');
+      const c = document.getElementById('desbloqueadas-lista');
+      if (!contactos.length) {
+        c.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📞</div><p>Aún no has desbloqueado ningún contacto</p><button class="btn btn-primary mt-16" onclick="showPanel('solicitudes')">Ver solicitudes disponibles</button></div>`;
+        return;
+      }
+      c.innerHTML = contactos.map(s => {
+        const est = ESTADOS[s.estado] || ESTADOS.nuevo;
+        const optsHtml = Object.entries(ESTADOS).map(([k,v]) =>
+          `<option value="${k}" ${s.estado===k?'selected':''}>${v.label}</option>`
+        ).join('');
+        return `
+        <div class="solicitud-card desbloqueada" style="margin-bottom:16px;" id="seg-${s.solicitud_id}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:.98rem; margin-bottom:5px;">${escapeHtml(s.titulo)}</div>
+              <div style="font-size:.82rem; color:var(--text-light); margin-bottom:8px;">
+                <span class="badge badge-primary">${escapeHtml(s.categoria)}</span>
+                &nbsp;📍 ${escapeHtml(s.comuna)}
+                ${s.presupuesto ? `&nbsp;💰 ${escapeHtml(s.presupuesto)}` : ''}
+                &nbsp;📅 ${formatDate(s.created_at)}
+              </div>
+              <div class="contact-box" style="margin-bottom:10px;">
+                <strong>👤 ${escapeHtml(s.cliente_nombre)}</strong><br>
+                📞 <a href="tel:${escapeHtml(s.cliente_tel)}">${escapeHtml(s.cliente_tel)}</a>&nbsp;
+                ✉️ <a href="mailto:${escapeHtml(s.cliente_email)}">${escapeHtml(s.cliente_email)}</a>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; min-width:160px;">
+              <div>
+                <div style="font-size:.75rem; font-weight:600; color:var(--text-light); margin-bottom:4px;">ESTADO</div>
+                <select class="form-control" style="font-size:.82rem; padding:6px 8px;"
+                  onchange="cambiarEstado(${s.solicitud_id}, this.value)">${optsHtml}</select>
+              </div>
+              ${s.eval_estrellas ? `
+                <div style="background:#fff8e1; border-radius:8px; padding:6px 10px; font-size:.8rem;">
+                  <div style="color:#ffc107; font-size:.95rem;">${'★'.repeat(s.eval_estrellas)}${'☆'.repeat(5-s.eval_estrellas)}</div>
+                  ${s.eval_comentario ? `<div style="color:var(--text-light); margin-top:3px;">"${escapeHtml(s.eval_comentario)}"</div>` : ''}
+                </div>` : ''}
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <input type="text" class="form-control" style="font-size:.82rem;" id="nota-${s.solicitud_id}"
+              placeholder="Nota interna (solo tú la ves)..." value="${escapeHtml(s.nota||'')}">
+            <button class="btn btn-sm" style="margin-top:6px; background:#f0f4f8;" onclick="guardarNota(${s.solicitud_id})">Guardar nota</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  async function cambiarEstado(solicitudId, estado) {
+    const nota = document.getElementById(`nota-${solicitudId}`)?.value || '';
+    await apiFetch(`/api/contacto/${solicitudId}/estado`, { method:'PATCH', body:{ estado, nota } });
+  }
+
+  async function guardarNota(solicitudId) {
+    const nota = document.getElementById(`nota-${solicitudId}`).value;
+    const select = document.querySelector(`#seg-${solicitudId} select`);
+    await apiFetch(`/api/contacto/${solicitudId}/estado`, { method:'PATCH', body:{ estado: select.value, nota } });
+    showAlert(document.getElementById('alert-global'), '✅ Nota guardada', 'success');
+  }
+
+  // ===== PLANES =====
+  function loadPlanes() {
+    const tipo = currentUser.plan_tipo || 'basico';
+    maxComunasUser = { basico: 3, pro: 10, elite: 31 }[tipo] || 3;
+
+    // Current plan box
+    const planBox = document.getElementById('current-plan-box');
+    const planMeta = {
+      basico: { label: 'Básico', color: '#e3f2fd', text: '#1565c0', icon: '📋', desc: '$1.000 por contacto · Máx. 3 comunas' },
+      pro:    { label: 'Pro',    color: '#fef9ec', text: '#92700a', icon: '⭐', desc: '$500 por contacto · Hasta 10 comunas · Perfil destacado' },
+      elite:  { label: 'Élite',  color: '#fef3c7', text: '#78350f', icon: '👑', desc: 'Leads gratis · Todas las comunas · 1er lugar en búsqueda' }
+    }[tipo];
+    planBox.innerHTML = `
+      <div style="background:${planMeta.color}; border-radius:12px; padding:16px 20px; display:flex; align-items:center; gap:12px;">
+        <span style="font-size:1.8rem;">${planMeta.icon}</span>
+        <div>
+          <div style="font-weight:800; color:${planMeta.text}; font-size:1rem;">Tu plan actual: Plan ${planMeta.label}</div>
+          <div style="font-size:.82rem; color:${planMeta.text}; opacity:.85;">${planMeta.desc}</div>
+          ${currentUser.plan_expira ? `<div style="font-size:.79rem; color:${planMeta.text}; opacity:.7; margin-top:2px;">Válido hasta: ${formatDate(currentUser.plan_expira)}</div>` : ''}
+        </div>
+      </div>
+    `;
+
+    // Update plan buttons
+    const btnBasico = document.getElementById('btn-basico');
+    const btnPro    = document.getElementById('btn-pro');
+    const btnElite  = document.getElementById('btn-elite');
+
+    btnBasico.disabled = false; btnBasico.textContent = 'Plan actual';
+    btnPro.disabled    = false; btnPro.textContent    = 'Suscribir al Plan Pro';
+    btnElite.disabled  = false; btnElite.textContent  = 'Suscribir al Plan Élite';
+
+    if (tipo === 'basico') {
+      btnBasico.disabled = true; btnBasico.textContent = '✓ Plan actual';
+    } else if (tipo === 'pro') {
+      btnPro.disabled = true; btnPro.textContent = '✓ Plan actual';
+      btnBasico.textContent = 'Tu plan (gratuito)';
+    } else {
+      btnElite.disabled = true; btnElite.textContent = '✓ Plan actual';
+    }
+
+    // Communes card
+    const card = document.getElementById('comunas-selector-card');
+    if (tipo === 'elite') {
+      card.innerHTML = `
+        <h3 style="font-weight:700; margin-bottom:6px;">📍 Cobertura total — Todas las comunas</h3>
+        <p style="font-size:.85rem; color:var(--text-light);">Con el Plan Élite ves solicitudes de las <strong>31 comunas</strong> de la Sexta Región automáticamente.</p>
+        <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:6px;">
+          ${COMUNAS.map(c => `<span style="background:#fef3c7; color:#92400e; padding:4px 10px; border-radius:8px; font-size:.78rem; font-weight:600;">${c}</span>`).join('')}
+        </div>
+      `;
+    } else {
+      const hint = document.getElementById('comunas-hint');
+      const counter = document.getElementById('comunas-counter');
+      if (hint) hint.textContent = `Plan ${tipo === 'pro' ? 'Pro' : 'Básico'}: selecciona hasta ${maxComunasUser} comunas donde ofrecer tus servicios. Solo verás solicitudes de estas comunas.`;
+      // Build commune grid
+      selectedComunas = currentUser.comunas_list ? [...currentUser.comunas_list] : ['Rancagua'];
+      buildComunasGrid();
+      updateComunasUI();
+      updateComunasCounter();
+    }
+  }
+
+  function buildComunasGrid() {
+    const grid = document.getElementById('comunas-grid');
+    if (!grid) return;
+    grid.innerHTML = COMUNAS.map(c => `
+      <button class="comuna-btn" id="cbtn-${c.replace(/[^a-zA-Z]/g,'')}" onclick="toggleComuna('${c}')">${c}</button>
+    `).join('');
+  }
+
+  function toggleComuna(comuna) {
+    if (selectedComunas.includes(comuna)) {
+      selectedComunas = selectedComunas.filter(c => c !== comuna);
+    } else {
+      if (selectedComunas.length >= maxComunasUser) {
+        showAlert(document.getElementById('comunas-alert'), `Tu plan permite máximo ${maxComunasUser} comunas. Actualiza tu plan para más.`);
+        return;
+      }
+      selectedComunas.push(comuna);
+    }
+    updateComunasUI();
+    updateComunasCounter();
+  }
+
+  function updateComunasUI() {
+    COMUNAS.forEach(c => {
+      const btn = document.getElementById(`cbtn-${c.replace(/[^a-zA-Z]/g,'')}`);
+      if (!btn) return;
+      if (selectedComunas.includes(c)) {
+        btn.classList.add('selected');
+      } else {
+        btn.classList.remove('selected');
+      }
+    });
+  }
+
+  function updateComunasCounter() {
+    const counter = document.getElementById('comunas-counter');
+    if (counter) counter.textContent = `${selectedComunas.length} de ${maxComunasUser} comunas seleccionadas`;
+  }
+
+  async function guardarComunas() {
+    try {
+      await apiFetch('/api/perfil/comunas', { method: 'POST', body: { comunas: selectedComunas } });
+      currentUser.comunas_list = [...selectedComunas];
+      currentUser.comunas_habilitadas = selectedComunas.join(',');
+      showAlert(document.getElementById('comunas-alert'), '✅ Comunas guardadas correctamente', 'success');
+    } catch(err) { showAlert(document.getElementById('comunas-alert'), err.message); }
+  }
+
+  async function suscribir(tipo) {
+    if (tipo === 'basico') return;
+    const costoStr = tipo === 'pro' ? '$9.990' : '$24.990';
+    const nombre = tipo === 'pro' ? 'Pro' : 'Élite';
+    if (!confirm(`¿Confirmas la suscripción al Plan ${nombre} por ${costoStr}/mes?\n\n(Para activar tu plan real, realiza la transferencia bancaria y el administrador lo activará manualmente.)`)) return;
+
+    const btn = document.getElementById(`btn-${tipo}`);
+    btn.disabled = true; btn.textContent = 'Activando...';
+    try {
+      const res = await apiFetch('/api/plan/suscribir', { method: 'POST', body: { tipo } });
+      currentUser.plan_tipo = res.plan_tipo;
+      currentUser.plan_expira = res.plan_expira;
+      if (res.comunas_list !== undefined) currentUser.comunas_list = res.comunas_list;
+      maxComunasUser = { basico: 3, pro: 10, elite: 31 }[tipo] || 3;
+      mostrarBadgePlan(tipo, currentUser.verificado);
+      actualizarCostoLead(tipo);
+      loadPlanes();
+      showAlert(document.getElementById('plan-alert'), `✅ ¡Plan ${nombre} activado! Válido por 30 días. En la versión real, se activa tras verificar tu transferencia.`, 'success');
+    } catch(err) {
+      showAlert(document.getElementById('plan-alert'), err.message);
+      btn.disabled = false; btn.textContent = `Suscribir al Plan ${nombre}`;
+    }
+  }
+
+  // ===== MINI SITIO =====
+  async function loadSitio() {
+    try {
+      const user = await apiFetch('/api/auth/me');
+      currentUser = { ...currentUser, ...user };
+      document.getElementById('cv-experiencia').value = user.cv_experiencia || '';
+      document.getElementById('cv-educacion').value   = user.cv_educacion || '';
+      document.getElementById('cv-habilidades').value = user.cv_habilidades || '';
+      document.getElementById('cv-disponibilidad').value = user.cv_disponibilidad || '';
+      const toggle = document.getElementById('sitio-activo-toggle');
+      toggle.checked = !!user.sitio_activo;
+      actualizarToggleUI(!!user.sitio_activo);
+      const linkBox = document.getElementById('sitio-link-box');
+      if (user.sitio_activo) {
+        linkBox.classList.remove('hidden');
+        document.getElementById('sitio-link').href = `/profesional.html?id=${user.id}`;
+      } else { linkBox.classList.add('hidden'); }
+    } catch(err) { console.error(err); }
+  }
+
+  function actualizarToggleUI(activo) {
+    const track = document.getElementById('toggle-track');
+    const thumb = document.getElementById('toggle-thumb');
+    if (track) { track.style.background = activo ? '#2e7d32' : '#ccc'; }
+    if (thumb) { thumb.style.left = activo ? '24px' : '2px'; }
+  }
+
+  async function toggleSitio(activo) {
+    actualizarToggleUI(activo);
+    await guardarCV(activo);
+  }
+
+  async function guardarCV(sitioActivo) {
+    const toggle = document.getElementById('sitio-activo-toggle');
+    const activo = sitioActivo !== undefined ? sitioActivo : toggle.checked;
+    try {
+      await apiFetch('/api/perfil/cv', { method:'POST', body:{
+        cv_experiencia:    document.getElementById('cv-experiencia').value,
+        cv_educacion:      document.getElementById('cv-educacion').value,
+        cv_habilidades:    document.getElementById('cv-habilidades').value,
+        cv_disponibilidad: document.getElementById('cv-disponibilidad').value,
+        sitio_activo:      activo
+      }});
+      showAlert(document.getElementById('sitio-alert'), '✅ Cambios guardados correctamente', 'success');
+      const linkBox = document.getElementById('sitio-link-box');
+      if (activo) {
+        linkBox.classList.remove('hidden');
+        document.getElementById('sitio-link').href = `/profesional.html?id=${currentUser.id}`;
+      } else { linkBox.classList.add('hidden'); }
+    } catch(err) { showAlert(document.getElementById('sitio-alert'), err.message); }
+  }
+
+  async function loadTransacciones() {
+    const user = await apiFetch('/api/auth/me');
+    setSaldo(user.saldo);
+    try {
+      const trans = await apiFetch('/api/transacciones');
+      const c = document.getElementById('transacciones-lista');
+      if (!trans.length) {
+        c.innerHTML = `<div class="empty-state" style="padding:20px;"><p>Sin transacciones aún</p></div>`;
+        return;
+      }
+      c.innerHTML = trans.map(t => `
+        <div class="transaction-item">
+          <div>
+            <div>${t.monto > 0 ? '🟢' : '🔴'} ${escapeHtml(t.descripcion)}</div>
+            <div style="font-size:.78rem; color:var(--text-light);">${formatDate(t.created_at)}</div>
+          </div>
+          <div style="font-weight:700; color:${t.monto > 0 ? 'var(--secondary)' : 'var(--danger)'};">
+            ${t.monto > 0 ? '+' : ''}${formatMoney(t.monto)}
+          </div>
+        </div>
+      `).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  function abrirModal(id, titulo) {
+    solicitudToUnlock = id;
+    const costos = { basico: 1000, pro: 500, elite: 0 };
+    const costo = costos[currentUser?.plan_tipo || 'basico'] || 1000;
+    const costoLabel = costo === 0 ? 'GRATIS (Plan Élite)' : formatMoney(costo);
+    const planDesc = costo === 0 ? 'Plan Élite: ¡este contacto es gratuito!' :
+                     costo < 1000 ? `Plan Pro: 50% de descuento. Normal: $1.000 → tú pagas $500.` :
+                     `Se descontarán ${costoLabel} de tu saldo.`;
+    document.getElementById('modal-info').innerHTML = `
+      <div style="font-size:.82rem; color:var(--text-light); margin-bottom:4px;">Solicitud seleccionada:</div>
+      <div style="font-weight:700;">${escapeHtml(titulo)}</div>
+      <div style="font-size:.82rem; color:var(--text-light); margin-top:8px;">Tu saldo: <strong>${formatMoney(currentUser.saldo)}</strong></div>
+    `;
+    document.getElementById('modal-costo-box').innerHTML = `💳 ${planDesc}`;
+    document.getElementById('modal-alert').innerHTML = '';
+    const btn = document.getElementById('confirm-btn');
+    btn.textContent = costo === 0 ? 'Ver contacto (gratis)' : `Pagar ${costoLabel} y ver contacto`;
+    document.getElementById('modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+    solicitudToUnlock = null;
+  }
+
+  async function confirmarDesbloqueo() {
+    if (!solicitudToUnlock) return;
+    const btn = document.getElementById('confirm-btn');
+    btn.disabled = true; btn.textContent = 'Procesando...';
+    try {
+      const res = await apiFetch(`/api/wallet/desbloquear/${solicitudToUnlock}`, { method: 'POST' });
+      setSaldo(res.saldo);
+      closeModal();
+      showAlert(document.getElementById('alert-global'),
+        `✅ Contacto desbloqueado — ${escapeHtml(res.contacto.nombre)} · ${escapeHtml(res.contacto.telefono)} · ${escapeHtml(res.contacto.email)}`,
+        'success');
+      loadSolicitudes();
+    } catch (err) {
+      showAlert(document.getElementById('modal-alert'), err.message);
+      if (err.message.includes('insuficiente')) {
+        setTimeout(() => { closeModal(); showPanel('saldo'); }, 2200);
+      }
+    } finally {
+      const costos = { basico: 1000, pro: 500, elite: 0 };
+      const costo = costos[currentUser?.plan_tipo || 'basico'] || 1000;
+      btn.disabled = false;
+      btn.textContent = costo === 0 ? 'Ver contacto (gratis)' : `Pagar ${formatMoney(costo)} y ver contacto`;
+    }
+  }
+
+  async function recargar(monto) {
+    try {
+      const res = await apiFetch('/api/wallet/recargar', { method: 'POST', body: { monto } });
+      setSaldo(res.saldo);
+      showAlert(document.getElementById('alert-global'), `✅ Se recargaron ${formatMoney(monto)} a tu saldo.`, 'success');
+      loadTransacciones();
+    } catch (err) {
+      showAlert(document.getElementById('alert-global'), err.message);
+    }
+  }
+
+  async function guardarDescripcion() {
+    const desc = document.getElementById('perfil-descripcion').value.trim();
+    if (!desc) return showAlert(document.getElementById('desc-alert'), 'Escribe una descripción');
+    try {
+      await apiFetch('/api/auth/descripcion', { method: 'POST', body: { descripcion: desc } });
+      showAlert(document.getElementById('desc-alert'), '✅ Descripción guardada', 'success');
+    } catch (err) { showAlert(document.getElementById('desc-alert'), err.message); }
+  }
+
+  // ===== FOTOS =====
+  async function loadFotos() {
+    try {
+      const fotos = await apiFetch('/api/fotos');
+      document.getElementById('foto-contador').textContent = `${fotos.length} / 10 fotos`;
+      const grid = document.getElementById('foto-grid');
+      if (!fotos.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-light); padding:20px; font-size:.88rem;">Aún no has subido fotos — ¡agrega la primera!</div>`;
+        return;
+      }
+      grid.innerHTML = fotos.map(f => `
+        <div class="foto-card">
+          <img src="${f.datos}" alt="${escapeHtml(f.titulo)}">
+          <div class="foto-titulo">${escapeHtml(f.titulo)}</div>
+          <button class="foto-delete" onclick="eliminarFoto(${f.id})" title="Eliminar">×</button>
+        </div>
+      `).join('');
+    } catch (err) { console.error(err); }
+  }
+
+  async function subirFoto() {
+    const input = document.getElementById('foto-input');
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return showAlert(document.getElementById('foto-alert'), 'La foto no puede superar 5 MB');
+    const titulo = prompt('¿Qué título le pones a esta foto?', 'Mi trabajo') || 'Mi trabajo';
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        await apiFetch('/api/fotos', { method: 'POST', body: { titulo, datos: e.target.result } });
+        showAlert(document.getElementById('foto-alert'), '✅ Foto subida correctamente', 'success');
+        loadFotos();
+      } catch (err) { showAlert(document.getElementById('foto-alert'), err.message); }
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  async function eliminarFoto(id) {
+    if (!confirm('¿Eliminar esta foto?')) return;
+    await apiFetch(`/api/fotos/${id}`, { method: 'DELETE' });
+    loadFotos();
+  }
+
+  async function handleLogout() {
+    await apiFetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/';
+  }
+
+  document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+  init();
+</script>
+</body>
+</html>

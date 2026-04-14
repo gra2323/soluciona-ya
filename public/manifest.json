@@ -1,0 +1,31 @@
+{
+  "name": "Soluciona Ya",
+  "short_name": "Soluciona Ya",
+  "description": "Profesionales y servicios en la Sexta Región de Chile",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#006633",
+  "theme_color": "#00a651",
+  "lang": "es",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Publicar solicitud",
+      "short_name": "Solicitud",
+      "url": "/auth.html?tipo=cliente",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Soy profesional",
+      "short_name": "Profesional",
+      "url": "/auth.html?tipo=profesional",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "utilities"],
+  "screenshots": []
+}

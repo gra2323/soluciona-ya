@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil Profesional — Soluciona Ya</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* ====== COVER ====== */
+    .cover-bar {
+      height: 180px;
+      background: linear-gradient(135deg, #0f172a 0%, #1a2744 60%, #243560 100%);
+      position: relative;
+    }
+    .cover-bar.pro   { background: linear-gradient(135deg, #1a2744, #c9920a); }
+    .cover-bar.elite { background: linear-gradient(135deg, #0f172a, #b8860b, #78350f); }
+
+    /* ====== PROFILE HEADER ====== */
+    .profile-header {
+      background: white;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      padding-bottom: 0;
+    }
+    .profile-top {
+      max-width: 960px; margin: 0 auto;
+      padding: 0 24px;
+      display: flex; align-items: flex-end; gap: 20px;
+      position: relative; top: -40px; margin-bottom: -24px;
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; font-size: 2.6rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      border: 4px solid white; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+      flex-shrink: 0;
+    }
+    .profile-info { flex: 1; padding-bottom: 16px; min-width: 200px; }
+    .profile-name { font-size: 1.55rem; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .profile-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: .88rem; color: var(--text-light); margin-top: 6px; }
+    .profile-meta span { display: flex; align-items: center; gap: 5px; }
+    .profile-actions { display: flex; gap: 10px; padding-bottom: 16px; flex-wrap: wrap; align-self: flex-end; }
+
+    /* ====== TABS ====== */
+    .profile-tabs {
+      max-width: 960px; margin: 0 auto; padding: 0 24px;
+      display: flex; gap: 0; border-bottom: 2px solid var(--border); overflow-x: auto;
+    }
+    .ptab {
+      padding: 14px 20px; cursor: pointer; font-weight: 600;
+      color: var(--text-light); border-bottom: 3px solid transparent;
+      transition: all .2s; font-size: .9rem; white-space: nowrap; margin-bottom: -2px;
+    }
+    .ptab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* ====== BODY ====== */
+    .profile-body { max-width: 960px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 22px; }
+    @media(max-width:720px){ .profile-body { grid-template-columns: 1fr; } .cover-bar { height: 120px; } }
+
+    /* ====== CARDS ====== */
+    .pcard { background: white; border-radius: 14px; padding: 22px; box-shadow: var(--shadow); margin-bottom: 18px; }
+    .pcard-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #e3f2fd; display: flex; align-items: center; gap: 8px; }
+
+    /* ====== STARS ====== */
+    .stars-filled { color: #f59e0b; }
+    .stars-empty  { color: #d1d5db; }
+    .stars-row    { display: flex; align-items: center; gap: 4px; }
+
+    /* ====== RATING SUMMARY ====== */
+    .rating-big { font-size: 3.8rem; font-weight: 800; color: #f59e0b; line-height: 1; }
+    .rating-bar-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; font-size: .82rem; }
+    .rating-bar-fill { height: 8px; border-radius: 4px; background: #f59e0b; }
+    .rating-bar-bg   { flex: 1; height: 8px; border-radius: 4px; background: #f0f4f8; overflow: hidden; }
+
+    /* ====== REVIEW CARD ====== */
+    .review-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* ====== FOTOS ====== */
+    .foto-masonry { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 8px; }
+    .foto-thumb { border-radius: 10px; overflow: hidden; aspect-ratio: 1; cursor: pointer; position: relative; }
+    .foto-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+    .foto-thumb:hover img { transform: scale(1.06); }
+    .foto-thumb .ftitle { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.55); color: white; font-size: .72rem; padding: 4px 8px; opacity: 0; transition: opacity .2s; }
+    .foto-thumb:hover .ftitle { opacity: 1; }
+
+    /* ====== HABILIDADES ====== */
+    .skill-tag { display: inline-block; background: #eef2ff; color: #1a2744; padding: 5px 14px; border-radius: 20px; font-size: .82rem; font-weight: 600; margin: 3px; }
+
+    /* ====== SIDEBAR ====== */
+    .contact-card { background: white; border-radius: 14px; padding: 22px; box-shadow: var(--shadow); position: sticky; top: 78px; }
+    .contact-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
+    .contact-row:last-child { border-bottom: none; }
+    .cta-primary { background: linear-gradient(135deg, var(--secondary), #a07808); color: white; border: none; border-radius: 50px; padding: 14px 24px; font-size: .95rem; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; transition: all .2s; text-decoration: none; display: block; text-align: center; }
+    .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(184,134,11,.35); }
+    .cta-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); border-radius: 50px; padding: 10px 20px; font-size: .88rem; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; transition: all .2s; text-decoration: none; display: block; text-align: center; margin-top: 10px; }
+    .cta-secondary:hover { background: var(--primary); color: white; }
+
+    /* ====== BADGES ====== */
+    .badge-pro   { background: #dbeafe; color: #1d4ed8; padding: 3px 10px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+    .badge-elite { background: #fef3c7; color: #92400e; padding: 3px 10px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+    .badge-ver   { background: linear-gradient(135deg, #b8860b, #c9920a); color: white; padding: 3px 10px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+
+    /* ====== LIGHTBOX ====== */
+    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+    .lb-close { position: absolute; top: 20px; right: 28px; color: white; font-size: 2.2rem; cursor: pointer; line-height: 1; }
+    .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.15); color: white; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .lb-prev { left: 16px; }
+    .lb-next { right: 16px; }
+
+    /* ====== SHARE TOAST ====== */
+    .share-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a2744; color: white; padding: 10px 22px; border-radius: 30px; font-size: .88rem; font-weight: 600; z-index: 700; pointer-events: none; opacity: 0; transition: opacity .3s; }
+    .share-toast.show { opacity: 1; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <a href="/directorio.html">Directorio</a>
+    <a href="/auth.html" style="background:rgba(255,255,255,.18); border-radius:8px;">Ingresar</a>
+  </div>
+</nav>
+
+<!-- NOT FOUND -->
+<div id="not-found" class="hidden" style="text-align:center; padding:80px 24px;">
+  <div style="font-size:3.5rem; margin-bottom:14px;">😕</div>
+  <h2 style="font-size:1.4rem; font-weight:800;">Perfil no encontrado</h2>
+  <p style="color:var(--text-light); margin-top:8px;">Este profesional no existe o su perfil no está publicado.</p>
+  <a href="/" class="btn btn-primary mt-16">Volver al inicio</a>
+</div>
+
+<!-- PERFIL -->
+<div id="perfil-content" class="hidden">
+
+  <!-- Cover -->
+  <div class="cover-bar" id="cover-bar"></div>
+
+  <!-- Header -->
+  <div class="profile-header">
+    <div class="profile-top">
+      <div class="profile-avatar" id="p-avatar"></div>
+      <div class="profile-info">
+        <div class="profile-name">
+          <span id="p-nombre"></span>
+          <span id="p-badge-plan"></span>
+          <span id="p-badge-ver"></span>
+        </div>
+        <div id="p-cat" style="font-size:.92rem; color:var(--text-light); margin-bottom:6px;"></div>
+        <div class="stars-row" id="p-stars-row"></div>
+        <div class="profile-meta" id="p-meta"></div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-primary" onclick="scrollToContacto()">📝 Contratar</button>
+        <button class="btn btn-outline" onclick="compartir()">🔗 Compartir</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="profile-tabs">
+      <div class="ptab active" onclick="showTab('inicio')">🏠 Inicio</div>
+      <div class="ptab" onclick="showTab('trabajos')" id="tab-trabajos" style="display:none;">📸 Trabajos</div>
+      <div class="ptab" onclick="showTab('resenas')">⭐ Reseñas</div>
+      <div class="ptab" onclick="showTab('sobre')">📋 Sobre mí</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="profile-body">
+
+    <!-- Col izquierda -->
+    <div>
+
+      <!-- TAB: INICIO -->
+      <div class="tab-panel active" id="panel-inicio">
+
+        <!-- Descripción -->
+        <div class="pcard" id="sec-desc">
+          <div class="pcard-title">ℹ️ Sobre este profesional</div>
+          <p id="p-descripcion" style="font-size:.93rem; line-height:1.7; color:var(--text);"></p>
+        </div>
+
+        <!-- Puntuación rápida -->
+        <div class="pcard" id="sec-rating-quick">
+          <div class="pcard-title">⭐ Calificación general</div>
+          <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+            <div style="text-align:center;">
+              <div class="rating-big" id="rating-num">—</div>
+              <div class="stars-row" id="rating-stars" style="justify-content:center; margin:4px 0;"></div>
+              <div style="font-size:.8rem; color:var(--text-light);" id="rating-total"></div>
+            </div>
+            <div style="flex:1; min-width:140px;" id="rating-bars"></div>
+          </div>
+        </div>
+
+        <!-- Preview fotos -->
+        <div class="pcard" id="sec-fotos-preview" style="display:none;">
+          <div class="pcard-title" style="justify-content:space-between; align-items:center;">
+            <span>📸 Trabajos realizados</span>
+            <button class="btn btn-sm btn-outline" onclick="showTab('trabajos')">Ver todos</button>
+          </div>
+          <div class="foto-masonry" id="fotos-preview-grid"></div>
+        </div>
+
+        <!-- Última reseña -->
+        <div class="pcard" id="sec-resena-preview" style="display:none;">
+          <div class="pcard-title" style="justify-content:space-between; align-items:center;">
+            <span>💬 Reseñas recientes</span>
+            <button class="btn btn-sm btn-outline" onclick="showTab('resenas')">Ver todas</button>
+          </div>
+          <div id="resena-preview"></div>
+        </div>
+
+      </div>
+
+      <!-- TAB: TRABAJOS -->
+      <div class="tab-panel" id="panel-trabajos">
+        <div class="pcard">
+          <div class="pcard-title">📸 Galería de trabajos</div>
+          <div class="foto-masonry" id="fotos-full-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px;"></div>
+          <div id="no-fotos" style="display:none; text-align:center; padding:30px; color:var(--text-light);">Este profesional aún no ha subido fotos de sus trabajos.</div>
+        </div>
+      </div>
+
+      <!-- TAB: RESEÑAS -->
+      <div class="tab-panel" id="panel-resenas">
+        <div class="pcard">
+          <div class="pcard-title">⭐ Todas las reseñas</div>
+          <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; margin-bottom:20px; padding-bottom:18px; border-bottom:2px solid #f0f4f8;">
+            <div style="text-align:center; flex-shrink:0;">
+              <div class="rating-big" id="r-num2">—</div>
+              <div class="stars-row" id="r-stars2" style="justify-content:center; margin:4px 0;"></div>
+              <div style="font-size:.8rem; color:var(--text-light);" id="r-total2"></div>
+            </div>
+            <div style="flex:1; min-width:140px;" id="r-bars2"></div>
+          </div>
+          <div id="eval-lista">
+            <div style="text-align:center; padding:24px; color:var(--text-light);">Sin reseñas aún</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: SOBRE MÍ -->
+      <div class="tab-panel" id="panel-sobre">
+        <div class="pcard" id="sec-cv">
+          <div class="pcard-title">📋 Información profesional</div>
+          <div id="cv-content">
+            <div style="text-align:center; padding:24px; color:var(--text-light);">Sin información adicional</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="contact-card" id="contact-card">
+        <div style="font-size:.78rem; font-weight:700; color:var(--text-light); letter-spacing:.04em; margin-bottom:14px;">CONTACTO</div>
+
+        <div id="contact-rows"></div>
+
+        <div style="margin-top:18px;">
+          <a href="/auth.html?tipo=cliente" class="cta-primary" id="btn-publicar">
+            📝 Solicitar este servicio (gratis)
+          </a>
+          <a id="btn-whatsapp" href="#" class="cta-secondary" style="display:none;">
+            💬 WhatsApp
+          </a>
+        </div>
+
+        <div style="font-size:.76rem; color:var(--text-light); text-align:center; margin-top:10px; line-height:1.5;">
+          Publica tu solicitud y el profesional te contactará directamente.
+        </div>
+      </div>
+
+      <!-- Auspiciador aleatorio -->
+      <div id="sidebar-ad" style="margin-top:16px; display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox hidden">
+  <span class="lb-close" onclick="cerrarLb()">×</span>
+  <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+</div>
+
+<div class="share-toast" id="share-toast">🔗 Enlace copiado al portapapeles</div>
+
+<script src="/utils.js"></script>
+<script>
+  let fotosAll = [], lbIdx = 0;
+  let profData = null;
+
+  function showTab(tab) {
+    document.querySelectorAll('.ptab').forEach((t,i) => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const tabs = ['inicio','trabajos','resenas','sobre'];
+    const idx = tabs.indexOf(tab);
+    if (idx >= 0) document.querySelectorAll('.ptab')[idx].classList.add('active');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+  }
+
+  function renderStars(promedio, size = '1.1rem') {
+    const full = Math.round(promedio || 0);
+    let h = '';
+    for (let i = 1; i <= 5; i++) {
+      h += `<span class="${i <= full ? 'stars-filled' : 'stars-empty'}" style="font-size:${size};">★</span>`;
+    }
+    return h;
+  }
+
+  function renderRatingBars(evaluaciones) {
+    if (!evaluaciones.length) return '';
+    const counts = [0,0,0,0,0];
+    evaluaciones.forEach(e => counts[e.estrellas - 1]++);
+    const max = Math.max(...counts, 1);
+    return [5,4,3,2,1].map(n => `
+      <div class="rating-bar-row">
+        <span style="min-width:14px; font-weight:600;">${n}</span>
+        <span class="stars-filled" style="font-size:.8rem;">★</span>
+        <div class="rating-bar-bg">
+          <div class="rating-bar-fill" style="width:${Math.round(counts[n-1]/max*100)}%;"></div>
+        </div>
+        <span style="min-width:20px; text-align:right;">${counts[n-1]}</span>
+      </div>
+    `).join('');
+  }
+
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) { showNotFound(); return; }
+
+    try {
+      const p = await apiFetch(`/api/perfil/publico/${id}`);
+      if (!p.sitio_activo) { showNotFound(); return; }
+      profData = p;
+
+      document.title = `${p.nombre} — Soluciona Ya`;
+      document.getElementById('perfil-content').classList.remove('hidden');
+
+      // Cover color según plan
+      const cover = document.getElementById('cover-bar');
+      if (p.plan_tipo === 'elite') cover.classList.add('elite');
+      else if (p.plan_tipo === 'pro') cover.classList.add('pro');
+
+      // Avatar
+      document.getElementById('p-avatar').textContent = p.nombre.charAt(0).toUpperCase();
+
+      // Nombre + badges
+      document.getElementById('p-nombre').textContent = p.nombre;
+      if (p.plan_tipo === 'pro') document.getElementById('p-badge-plan').innerHTML = '<span class="badge-pro">PRO</span>';
+      else if (p.plan_tipo === 'elite') document.getElementById('p-badge-plan').innerHTML = '<span class="badge-elite">ÉLITE</span>';
+      if (p.verificado) document.getElementById('p-badge-ver').innerHTML = '<span class="badge-ver">✓ Verificado</span>';
+
+      // Categoría
+      document.getElementById('p-cat').textContent = p.categoria || '';
+
+      // Meta row
+      const meta = [];
+      if (p.cv_disponibilidad) meta.push(`<span>🕐 ${escapeHtml(p.cv_disponibilidad)}</span>`);
+      meta.push(`<span>📍 Sexta Región</span>`);
+      document.getElementById('p-meta').innerHTML = meta.join('');
+
+      // Stars header
+      if (p.promedio) {
+        document.getElementById('p-stars-row').innerHTML =
+          renderStars(parseFloat(p.promedio)) +
+          `<span style="font-size:.9rem; color:var(--text-light); margin-left:6px;">${p.promedio} (${p.total} reseña${p.total!==1?'s':''})</span>`;
+      }
+
+      // Tab trabajos visible si hay fotos
+      fotosAll = p.fotos || [];
+      if (fotosAll.length) {
+        document.getElementById('tab-trabajos').style.display = '';
+      }
+
+      // ---- TAB INICIO ----
+
+      // Descripción
+      const secDesc = document.getElementById('sec-desc');
+      if (p.descripcion) {
+        document.getElementById('p-descripcion').textContent = p.descripcion;
+      } else { secDesc.style.display = 'none'; }
+
+      // Rating
+      const num = parseFloat(p.promedio) || 0;
+      document.getElementById('rating-num').textContent = p.promedio || '—';
+      document.getElementById('rating-stars').innerHTML = renderStars(num);
+      document.getElementById('rating-total').textContent = p.total ? `${p.total} reseña${p.total!==1?'s':''}` : 'Sin reseñas aún';
+      document.getElementById('rating-bars').innerHTML = renderRatingBars(p.evaluaciones || []);
+
+      // Preview fotos (max 6)
+      if (fotosAll.length) {
+        document.getElementById('sec-fotos-preview').style.display = '';
+        document.getElementById('fotos-preview-grid').innerHTML = fotosAll.slice(0,6).map((f,i) => `
+          <div class="foto-thumb" onclick="abrirLb(${i})">
+            <img src="${f.datos}" alt="${escapeHtml(f.titulo)}" loading="lazy">
+            <div class="ftitle">${escapeHtml(f.titulo)}</div>
+          </div>
+        `).join('');
+      }
+
+      // Preview reseñas (max 2)
+      const evals = p.evaluaciones || [];
+      if (evals.length) {
+        document.getElementById('sec-resena-preview').style.display = '';
+        document.getElementById('resena-preview').innerHTML = evals.slice(0,2).map(ev => reviewCard(ev)).join('');
+      }
+
+      // ---- TAB TRABAJOS ----
+      if (fotosAll.length) {
+        document.getElementById('fotos-full-grid').innerHTML = fotosAll.map((f,i) => `
+          <div class="foto-thumb" onclick="abrirLb(${i})">
+            <img src="${f.datos}" alt="${escapeHtml(f.titulo)}" loading="lazy">
+            <div class="ftitle">${escapeHtml(f.titulo)}</div>
+          </div>
+        `).join('');
+      } else {
+        document.getElementById('fotos-full-grid').style.display = 'none';
+        document.getElementById('no-fotos').style.display = '';
+      }
+
+      // ---- TAB RESEÑAS ----
+      document.getElementById('r-num2').textContent = p.promedio || '—';
+      document.getElementById('r-stars2').innerHTML = renderStars(num);
+      document.getElementById('r-total2').textContent = p.total ? `${p.total} reseña${p.total!==1?'s':''}` : 'Sin reseñas aún';
+      document.getElementById('r-bars2').innerHTML = renderRatingBars(evals);
+      if (evals.length) {
+        document.getElementById('eval-lista').innerHTML = evals.map(ev => reviewCard(ev)).join('');
+      }
+
+      // ---- TAB SOBRE MÍ ----
+      const cvParts = [];
+      if (p.cv_experiencia) cvParts.push(cvRow('💼', 'Experiencia laboral', p.cv_experiencia));
+      if (p.cv_educacion)   cvParts.push(cvRow('🎓', 'Educación y certificaciones', p.cv_educacion));
+      if (p.cv_habilidades) {
+        const tags = p.cv_habilidades.split(',').map(h => `<span class="skill-tag">${escapeHtml(h.trim())}</span>`).join('');
+        cvParts.push(cvRow('⚡', 'Habilidades', null, `<div style="margin-top:8px;">${tags}</div>`));
+      }
+      if (p.cv_disponibilidad) cvParts.push(cvRow('🕐', 'Disponibilidad', p.cv_disponibilidad));
+      if (cvParts.length) {
+        document.getElementById('cv-content').innerHTML = cvParts.join('');
+      }
+
+      // ---- SIDEBAR ----
+      const rows = [];
+      if (p.categoria) rows.push({ icon: '🏷️', label: p.categoria });
+      if (p.cv_disponibilidad) rows.push({ icon: '🕐', label: p.cv_disponibilidad });
+      rows.push({ icon: '📍', label: 'Sexta Región, Chile' });
+      if (p.plan_tipo === 'elite' || p.plan_tipo === 'pro') {
+        rows.push({ icon: '✅', label: 'Perfil verificado por Soluciona Ya' });
+      }
+      document.getElementById('contact-rows').innerHTML = rows.map(r =>
+        `<div class="contact-row"><span style="font-size:1.1rem;">${r.icon}</span><span>${escapeHtml(r.label)}</span></div>`
+      ).join('');
+
+      // Cargar auspiciador en sidebar
+      loadSidebarAd();
+
+    } catch(e) {
+      showNotFound();
+    }
+  }
+
+  function reviewCard(ev) {
+    return `
+      <div class="review-item">
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <div class="review-avatar">${ev.cliente_nombre.charAt(0).toUpperCase()}</div>
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <strong style="font-size:.88rem;">${escapeHtml(ev.cliente_nombre)}</strong>
+              <div>${renderStars(ev.estrellas,'1rem')}</div>
+            </div>
+            ${ev.comentario ? `<p style="font-size:.85rem; color:#4b5563; line-height:1.6; margin-top:5px;">"${escapeHtml(ev.comentario)}"</p>` : ''}
+            <div style="font-size:.75rem; color:var(--text-light); margin-top:4px;">${formatDate(ev.created_at)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function cvRow(icon, label, text, customHtml) {
+    return `
+      <div style="display:flex; gap:14px; margin-bottom:18px;">
+        <span style="font-size:1.4rem; flex-shrink:0; margin-top:2px;">${icon}</span>
+        <div>
+          <div style="font-size:.76rem; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">${label}</div>
+          ${text ? `<p style="font-size:.9rem; line-height:1.65; color:var(--text); white-space:pre-line;">${escapeHtml(text)}</p>` : ''}
+          ${customHtml || ''}
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadSidebarAd() {
+    try {
+      const ads = await apiFetch('/api/publicidad');
+      if (!ads.length) return;
+      const ad = ads[Math.floor(Math.random() * Math.min(ads.length, 3))];
+      const sidebarAd = document.getElementById('sidebar-ad');
+      sidebarAd.style.display = '';
+      sidebarAd.innerHTML = `
+        <div style="border-radius:12px; padding:16px; background:${ad.color_fondo||'#1a2744'}; color:${ad.color_texto||'#ffffff'}; box-shadow:var(--shadow);">
+          <div style="font-size:.65rem; font-weight:700; opacity:.7; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">Publicidad</div>
+          ${ad.imagen ? `<img src="${ad.imagen}" style="width:100%; height:60px; object-fit:cover; border-radius:8px; margin-bottom:8px;">` : ''}
+          <div style="font-weight:800; font-size:.95rem; margin-bottom:4px;">${escapeHtml(ad.empresa)}</div>
+          <div style="font-size:.82rem; opacity:.9; margin-bottom:10px; line-height:1.5;">${escapeHtml(ad.descripcion)}</div>
+          <a href="tel:${escapeHtml(ad.telefono)}" style="display:block; padding:8px 14px; border-radius:50px; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3); color:${ad.color_texto||'#ffffff'}; text-decoration:none; font-weight:700; font-size:.82rem; text-align:center;">📞 ${escapeHtml(ad.telefono)}</a>
+        </div>
+      `;
+    } catch(e) {}
+  }
+
+  function showNotFound() {
+    document.getElementById('not-found').classList.remove('hidden');
+  }
+
+  // Lightbox
+  function abrirLb(idx) {
+    lbIdx = idx;
+    actualizarLb();
+    document.getElementById('lightbox').classList.remove('hidden');
+  }
+  function cerrarLb() { document.getElementById('lightbox').classList.add('hidden'); }
+  function navLb(dir) {
+    lbIdx = (lbIdx + dir + fotosAll.length) % fotosAll.length;
+    actualizarLb();
+  }
+  function actualizarLb() {
+    document.getElementById('lb-img').src = fotosAll[lbIdx].datos;
+    const nav = document.querySelectorAll('.lb-nav');
+    nav.forEach(n => n.style.display = fotosAll.length > 1 ? '' : 'none');
+  }
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === e.currentTarget) cerrarLb();
+  });
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb.classList.contains('hidden')) return;
+    if (e.key === 'Escape') cerrarLb();
+    if (e.key === 'ArrowRight') navLb(1);
+    if (e.key === 'ArrowLeft')  navLb(-1);
+  });
+
+  // Compartir
+  async function compartir() {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      const t = document.getElementById('share-toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    } catch { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`, '_blank'); }
+  }
+
+  function scrollToContacto() {
+    document.getElementById('contact-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  init();
+</script>
+</body>
+</html>

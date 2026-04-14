@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya — Presentación para Inversionistas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --navy: #0f172a;
+      --blue: #1a2744;
+      --gold: #b8860b;
+      --gold-light: #c9920a;
+      --white: #ffffff;
+      --gray: #6b7280;
+      --light: #f4f6f9;
+      --border: #e2e6ed;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: white; }
+
+    /* ====== SLIDE ENGINE ====== */
+    .slide { display: none; min-height: 100vh; padding: 0; position: relative; flex-direction: column; }
+    .slide.active { display: flex; }
+
+    /* NAV */
+    .nav-bar {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: rgba(255,255,255,.12); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.2); border-radius: 50px;
+      padding: 10px 22px; display: flex; align-items: center; gap: 16px; z-index: 100;
+    }
+    .nav-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background .2s; }
+    .nav-btn:hover { background: rgba(255,255,255,.2); }
+    .nav-count { font-size: .88rem; color: rgba(255,255,255,.75); min-width: 52px; text-align: center; font-weight: 600; }
+    .nav-dots { display: flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); cursor: pointer; transition: all .2s; }
+    .dot.active { background: var(--gold-light); width: 22px; border-radius: 4px; }
+
+    /* SLIDE DECORATIONS */
+    .bg-grid {
+      position: absolute; inset: 0; opacity: .04;
+      background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .gold-line { width: 64px; height: 4px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 2px; margin: 14px 0 22px; }
+    .gold-line.center { margin: 14px auto 22px; }
+
+    /* ===== SLIDE 1: PORTADA ===== */
+    #s1 { background: linear-gradient(145deg, #0f172a 0%, #1a2744 50%, #0f172a 100%); justify-content: center; align-items: center; text-align: center; }
+    .logo-big { font-size: 4rem; margin-bottom: 16px; }
+    .brand-name { font-size: 3.2rem; font-weight: 900; letter-spacing: -.02em; background: linear-gradient(135deg, #fff, #c9920a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .tagline { font-size: 1.2rem; color: rgba(255,255,255,.75); max-width: 500px; margin: 16px auto 32px; line-height: 1.6; }
+    .pitch-tag { display: inline-block; background: rgba(201,146,10,.2); border: 1px solid var(--gold); color: var(--gold-light); padding: 6px 18px; border-radius: 20px; font-size: .88rem; font-weight: 700; margin-bottom: 32px; }
+    .region-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 10px 22px; border-radius: 50px; font-size: .92rem; color: rgba(255,255,255,.85); }
+
+    /* ===== SLIDE 2: PROBLEMA ===== */
+    #s2 { background: linear-gradient(145deg, #0f172a, #1e0a0a); justify-content: center; }
+    .prob-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 20px; max-width: 900px; width: 100%; }
+    .prob-card { background: rgba(185,28,28,.15); border: 1px solid rgba(185,28,28,.35); border-radius: 16px; padding: 24px; }
+    .prob-icon { font-size: 2.2rem; margin-bottom: 12px; }
+    .prob-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: #fca5a5; }
+    .prob-desc { font-size: .87rem; color: rgba(255,255,255,.7); line-height: 1.6; }
+
+    /* ===== SLIDE 3: SOLUCIÓN ===== */
+    #s3 { background: linear-gradient(145deg, #0a1628, #1a2744); justify-content: center; align-items: center; }
+    .sol-center { max-width: 820px; width: 100%; padding: 0 24px; }
+    .sol-flow { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin-top: 32px; }
+    .sol-step { text-align: center; padding: 20px; flex: 1; min-width: 150px; }
+    .sol-step-icon { font-size: 2.4rem; margin-bottom: 10px; }
+    .sol-step-num { display: inline-flex; width: 28px; height: 28px; background: var(--gold); color: white; border-radius: 50%; align-items: center; justify-content: center; font-weight: 800; font-size: .82rem; margin-bottom: 8px; }
+    .sol-step-title { font-size: .92rem; font-weight: 700; margin-bottom: 4px; }
+    .sol-step-desc { font-size: .8rem; color: rgba(255,255,255,.6); line-height: 1.5; }
+    .sol-arrow { font-size: 1.8rem; color: var(--gold); padding: 0 8px; flex-shrink: 0; }
+
+    /* ===== SLIDE 4: MERCADO ===== */
+    #s4 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .mkt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 18px; max-width: 900px; width: 100%; }
+    .mkt-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px 20px; text-align: center; }
+    .mkt-num { font-size: 2.6rem; font-weight: 900; color: var(--gold-light); line-height: 1; margin-bottom: 6px; }
+    .mkt-label { font-size: .84rem; color: rgba(255,255,255,.65); line-height: 1.5; }
+
+    /* ===== SLIDE 5: MODELO DE NEGOCIO ===== */
+    #s5 { background: linear-gradient(145deg, #0f172a, #1a2a1a); justify-content: center; align-items: center; }
+    .rev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 16px; max-width: 900px; width: 100%; }
+    .rev-card { border-radius: 16px; padding: 24px 20px; position: relative; overflow: hidden; }
+    .rev-card.c1 { background: linear-gradient(135deg, rgba(26,39,68,.9), rgba(36,53,96,.9)); border: 1px solid rgba(201,146,10,.3); }
+    .rev-card.c2 { background: linear-gradient(135deg, rgba(201,146,10,.2), rgba(184,134,11,.25)); border: 1px solid var(--gold); }
+    .rev-card.c3 { background: linear-gradient(135deg, rgba(120,53,15,.3), rgba(184,134,11,.2)); border: 1px solid #d97706; }
+    .rev-card.c4 { background: linear-gradient(135deg, rgba(30,58,138,.3), rgba(26,86,219,.2)); border: 1px solid #3b82f6; }
+    .rev-icon { font-size: 1.8rem; margin-bottom: 10px; }
+    .rev-title { font-weight: 800; font-size: .95rem; margin-bottom: 6px; }
+    .rev-price { font-size: 1.5rem; font-weight: 900; color: var(--gold-light); margin-bottom: 6px; }
+    .rev-desc { font-size: .82rem; color: rgba(255,255,255,.65); line-height: 1.5; }
+
+    /* ===== SLIDE 6: PROYECCIÓN ===== */
+    #s6 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .proj-table { width: 100%; max-width: 860px; border-collapse: collapse; }
+    .proj-table th { background: rgba(201,146,10,.2); color: var(--gold-light); padding: 14px 18px; text-align: left; font-size: .88rem; border-bottom: 2px solid var(--gold); }
+    .proj-table td { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: .9rem; }
+    .proj-table tr:hover td { background: rgba(255,255,255,.04); }
+    .green { color: #4ade80; font-weight: 700; }
+    .gold-txt { color: var(--gold-light); font-weight: 700; }
+
+    /* ===== SLIDE 7: PLANES ===== */
+    #s7 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .plan-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 16px; max-width: 860px; width: 100%; }
+    .plan-box { border-radius: 16px; padding: 24px 20px; text-align: center; }
+    .plan-box.basico { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); }
+    .plan-box.pro    { background: rgba(201,146,10,.15); border: 2px solid var(--gold); }
+    .plan-box.elite  { background: linear-gradient(135deg, rgba(120,53,15,.3), rgba(184,134,11,.25)); border: 2px solid #d97706; }
+    .plan-box.pub    { background: rgba(59,130,246,.15); border: 1px solid #3b82f6; }
+    .plan-name  { font-weight: 800; font-size: .95rem; margin-bottom: 8px; }
+    .plan-price { font-size: 1.9rem; font-weight: 900; margin-bottom: 4px; }
+    .plan-per   { font-size: .78rem; color: rgba(255,255,255,.55); margin-bottom: 14px; }
+    .plan-feat  { font-size: .82rem; color: rgba(255,255,255,.7); line-height: 2; }
+
+    /* ===== SLIDE 8: VENTAJAS COMPETITIVAS ===== */
+    #s8 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 860px; width: 100%; }
+    .vc-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 20px; display: flex; gap: 14px; }
+    .vc-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .vc-title { font-weight: 700; margin-bottom: 4px; font-size: .93rem; }
+    .vc-desc { font-size: .83rem; color: rgba(255,255,255,.65); line-height: 1.55; }
+
+    /* ===== SLIDE 9: TRACCIÓN / ESTADO ===== */
+    #s9 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .trac-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; max-width: 860px; width: 100%; }
+    .trac-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 22px; text-align: center; }
+    .trac-num { font-size: 2.2rem; font-weight: 900; color: var(--gold-light); }
+    .trac-label { font-size: .82rem; color: rgba(255,255,255,.6); margin-top: 4px; line-height: 1.4; }
+    .milestone { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .milestone:last-child { border: none; }
+    .ms-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); margin-top: 5px; flex-shrink: 0; }
+    .ms-done { background: #4ade80; }
+
+    /* ===== SLIDE 10: INVERSIÓN ===== */
+    #s10 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .inv-box { max-width: 820px; width: 100%; }
+    .ask-big { font-size: 4rem; font-weight: 900; color: var(--gold-light); text-align: center; margin: 20px 0 6px; }
+    .use-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; margin-top: 28px; }
+    .use-card { background: rgba(255,255,255,.06); border-radius: 12px; padding: 18px; text-align: center; }
+    .use-pct { font-size: 1.8rem; font-weight: 800; color: var(--gold-light); }
+    .use-label { font-size: .83rem; color: rgba(255,255,255,.65); margin-top: 4px; line-height: 1.4; }
+
+    /* ===== SLIDE 11: EQUIPO ===== */
+    #s11 { background: linear-gradient(145deg, #0f172a, #1a2744); justify-content: center; align-items: center; }
+    .team-grid { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; max-width: 700px; }
+    .team-card { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 28px 24px; text-align: center; min-width: 200px; }
+    .team-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--gold)); color: white; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .team-name { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+    .team-role { font-size: .84rem; color: var(--gold-light); margin-bottom: 8px; font-weight: 600; }
+    .team-desc { font-size: .82rem; color: rgba(255,255,255,.6); line-height: 1.55; }
+
+    /* ===== SLIDE 12: CIERRE ===== */
+    #s12 { background: linear-gradient(145deg, #0f172a 0%, #1a2744 50%, #0f172a 100%); justify-content: center; align-items: center; text-align: center; }
+    .close-big { font-size: 2.6rem; font-weight: 900; max-width: 640px; line-height: 1.2; background: linear-gradient(135deg, #fff 30%, #c9920a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .contact-pitch { display: flex; gap: 28px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+    .cp-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 12px 22px; border-radius: 50px; font-size: .92rem; }
+
+    /* SLIDE CONTENT CONTAINER */
+    .slide-inner { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 32px 100px; }
+    .slide-tag { display: inline-block; background: rgba(201,146,10,.15); border: 1px solid rgba(201,146,10,.4); color: var(--gold-light); padding: 4px 14px; border-radius: 20px; font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 14px; }
+    .slide-title { font-size: 2rem; font-weight: 900; text-align: center; max-width: 700px; line-height: 1.15; }
+    .slide-sub { font-size: 1rem; color: rgba(255,255,255,.65); text-align: center; max-width: 560px; margin-top: 10px; line-height: 1.6; }
+
+    @media(max-width:600px){
+      .slide-title { font-size: 1.5rem; }
+      .brand-name { font-size: 2.2rem; }
+      .vc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ====== SLIDE 1: PORTADA ====== -->
+<div class="slide active" id="s1">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="logo-big">🏘️</div>
+    <div class="brand-name">Soluciona Ya</div>
+    <div class="tagline">La plataforma que conecta a personas con profesionales y servicios de la Sexta Región — rápido, simple y sin intermediarios.</div>
+    <div class="pitch-tag">📊 Presentación para Inversionistas · 2025</div>
+    <div class="region-badge">
+      <span>📍</span>
+      <span>Región del Libertador General Bernardo O'Higgins · Chile</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 2: PROBLEMA ====== -->
+<div class="slide" id="s2">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">El problema</div>
+    <div class="slide-title" style="margin-bottom:10px;">Encontrar un buen profesional<br>es difícil y frustrante</div>
+    <div class="slide-sub" style="margin-bottom:32px;">En la Sexta Región, miles de personas necesitan servicios a diario pero no tienen cómo encontrar profesionales confiables cerca de ellas.</div>
+    <div class="prob-grid">
+      <div class="prob-card">
+        <div class="prob-icon">📵</div>
+        <div class="prob-title">Sin directorio local</div>
+        <div class="prob-desc">No existe una plataforma regional. La gente busca en grupos de WhatsApp o Facebook sin garantías.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">❓</div>
+        <div class="prob-title">Sin referencias confiables</div>
+        <div class="prob-desc">No hay forma de ver evaluaciones reales, fotos de trabajos previos ni historial verificado del profesional.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">💸</div>
+        <div class="prob-title">Profesionales sin visibilidad</div>
+        <div class="prob-desc">Los técnicos y profesionales locales no tienen cómo publicitar sus servicios de forma efectiva y económica.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">🗺️</div>
+        <div class="prob-title">31 comunas desconectadas</div>
+        <div class="prob-desc">Desde Pichilemu hasta Rancagua, las comunas rurales tienen aún menos acceso a servicios profesionales.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 3: SOLUCIÓN ====== -->
+<div class="slide" id="s3">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">La solución</div>
+    <div class="slide-title">Una plataforma completa<br>para la Sexta Región</div>
+    <div class="slide-sub">Soluciona Ya conecta a clientes con profesionales verificados — con perfiles tipo Google Business, calificaciones reales y contacto directo.</div>
+    <div class="sol-flow">
+      <div class="sol-step">
+        <div class="sol-step-icon">📝</div>
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-title">Cliente publica</div>
+        <div class="sol-step-desc">Describe lo que necesita. 100% gratis.</div>
+      </div>
+      <div class="sol-arrow">→</div>
+      <div class="sol-step">
+        <div class="sol-step-icon">🔔</div>
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-title">Profesional recibe</div>
+        <div class="sol-step-desc">Notificación instantánea en su categoría y comuna.</div>
+      </div>
+      <div class="sol-arrow">→</div>
+      <div class="sol-step">
+        <div class="sol-step-icon">🔓</div>
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-title">Paga el lead</div>
+        <div class="sol-step-desc">Solo $1.000 para ver el contacto del cliente.</div>
+      </div>
+      <div class="sol-arrow">→</div>
+      <div class="sol-step">
+        <div class="sol-step-icon">📞</div>
+        <div class="sol-step-num">4</div>
+        <div class="sol-step-title">Contacto directo</div>
+        <div class="sol-step-desc">Sin comisiones. El profesional cierra el trato.</div>
+      </div>
+      <div class="sol-arrow">→</div>
+      <div class="sol-step">
+        <div class="sol-step-icon">⭐</div>
+        <div class="sol-step-num">5</div>
+        <div class="sol-step-title">Evaluación</div>
+        <div class="sol-step-desc">El cliente califica el servicio y construye reputación.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 4: MERCADO ====== -->
+<div class="slide" id="s4">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Tamaño del mercado</div>
+    <div class="slide-title">Un mercado enorme<br>sin competencia directa</div>
+    <div class="slide-sub" style="margin-bottom:32px;">La Sexta Región tiene más de 980.000 habitantes y ninguna plataforma local de servicios.</div>
+    <div class="mkt-grid">
+      <div class="mkt-card">
+        <div class="mkt-num">980K</div>
+        <div class="mkt-label">Habitantes en la<br>Sexta Región</div>
+      </div>
+      <div class="mkt-card">
+        <div class="mkt-num">31</div>
+        <div class="mkt-label">Comunas cubiertas<br>desde el día 1</div>
+      </div>
+      <div class="mkt-card">
+        <div class="mkt-num">35+</div>
+        <div class="mkt-label">Categorías de servicios<br>disponibles</div>
+      </div>
+      <div class="mkt-card">
+        <div class="mkt-num">~85K</div>
+        <div class="mkt-label">Profesionales<br>independientes potenciales</div>
+      </div>
+      <div class="mkt-card">
+        <div class="mkt-num">$0</div>
+        <div class="mkt-label">Competencia directa<br>en la región</div>
+      </div>
+      <div class="mkt-card">
+        <div class="mkt-num" style="font-size:1.8rem;">7 Regiones</div>
+        <div class="mkt-label">Escalable a todo<br>Chile en fase 2</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 5: MODELO DE NEGOCIO ====== -->
+<div class="slide" id="s5">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Modelo de negocio</div>
+    <div class="slide-title">4 fuentes de ingresos<br>diversificadas</div>
+    <div class="gold-line center"></div>
+    <div class="rev-grid">
+      <div class="rev-card c1">
+        <div class="rev-icon">🔓</div>
+        <div class="rev-title">Pago por Lead</div>
+        <div class="rev-price">$1.000</div>
+        <div class="rev-desc">Por cada contacto que desbloquea un profesional. Sin suscripción obligatoria.</div>
+      </div>
+      <div class="rev-card c2">
+        <div class="rev-icon">⭐</div>
+        <div class="rev-title">Plan Pro</div>
+        <div class="rev-price">$9.990<span style="font-size:1rem; font-weight:400;">/mes</span></div>
+        <div class="rev-desc">Leads a $500 (50% dcto), hasta 10 comunas, perfil destacado.</div>
+      </div>
+      <div class="rev-card c3">
+        <div class="rev-icon">👑</div>
+        <div class="rev-title">Plan Élite</div>
+        <div class="rev-price">$24.990<span style="font-size:1rem; font-weight:400;">/mes</span></div>
+        <div class="rev-desc">Leads gratis, todas las comunas, 1er lugar en búsquedas, verificación.</div>
+      </div>
+      <div class="rev-card c4">
+        <div class="rev-icon">📢</div>
+        <div class="rev-title">Publicidad</div>
+        <div class="rev-price">$5K–$15K<span style="font-size:1rem; font-weight:400;">/mes</span></div>
+        <div class="rev-desc">Avisos de empresas en página principal, directorio y perfiles públicos.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 6: PROYECCIÓN ====== -->
+<div class="slide" id="s6">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Proyección financiera</div>
+    <div class="slide-title">Ingresos proyectados<br>a 3 años</div>
+    <div class="gold-line center"></div>
+    <div style="overflow-x:auto; width:100%; max-width:860px;">
+      <table class="proj-table">
+        <thead>
+          <tr>
+            <th>Escenario</th>
+            <th>Profesionales</th>
+            <th>Plan Pro/Élite</th>
+            <th>Leads/mes</th>
+            <th>Publicidad</th>
+            <th>Ingreso Mensual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🌱 Año 1 (conservador)</td>
+            <td>150</td>
+            <td>20 Pro · 5 Élite</td>
+            <td>300</td>
+            <td>2 avisos</td>
+            <td class="gold-txt">~$645.000</td>
+          </tr>
+          <tr>
+            <td>📈 Año 2 (moderado)</td>
+            <td>600</td>
+            <td>80 Pro · 20 Élite</td>
+            <td>1.200</td>
+            <td>8 avisos</td>
+            <td class="gold-txt">~$2.900.000</td>
+          </tr>
+          <tr>
+            <td>🚀 Año 3 (optimista)</td>
+            <td>2.000</td>
+            <td>300 Pro · 80 Élite</td>
+            <td>4.000</td>
+            <td>20 avisos</td>
+            <td class="green">~$10.500.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-size:.78rem; color:rgba(255,255,255,.45); margin-top:14px; text-align:center;">* Proyecciones basadas en tasa de adopción conservadora del 0.5% del mercado potencial en año 1.</div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 7: PLANES ====== -->
+<div class="slide" id="s7">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Planes y precios</div>
+    <div class="slide-title">Precios accesibles<br>para todos los profesionales</div>
+    <div class="gold-line center"></div>
+    <div class="plan-row">
+      <div class="plan-box basico">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-per">para siempre</div>
+        <div class="plan-feat">
+          Perfil público<br>
+          $1.000 por lead<br>
+          3 comunas<br>
+          Sin prioridad
+        </div>
+      </div>
+      <div class="plan-box pro">
+        <div style="font-size:.7rem; font-weight:700; color:var(--gold-light); margin-bottom:6px;">★ MÁS POPULAR</div>
+        <div class="plan-name">Plan Pro</div>
+        <div class="plan-price" style="color:var(--gold-light);">$9.990</div>
+        <div class="plan-per">/mes CLP</div>
+        <div class="plan-feat">
+          $500 por lead (50% dcto)<br>
+          10 comunas<br>
+          Perfil destacado<br>
+          Badge PRO
+        </div>
+      </div>
+      <div class="plan-box elite">
+        <div style="font-size:.7rem; font-weight:700; color:#fbbf24; margin-bottom:6px;">👑 MAYOR VALOR</div>
+        <div class="plan-name" style="color:#fbbf24;">Plan Élite</div>
+        <div class="plan-price" style="color:#fbbf24;">$24.990</div>
+        <div class="plan-per">/mes CLP</div>
+        <div class="plan-feat">
+          Leads ilimitados y gratis<br>
+          Todas las comunas (31)<br>
+          1° lugar en búsquedas<br>
+          Verificación oficial
+        </div>
+      </div>
+      <div class="plan-box pub">
+        <div style="font-size:.7rem; font-weight:700; color:#60a5fa; margin-bottom:6px;">📢 PUBLICIDAD</div>
+        <div class="plan-name">Auspiciador</div>
+        <div class="plan-price" style="color:#60a5fa; font-size:1.4rem;">$5K–$15K</div>
+        <div class="plan-per">/semana o mes</div>
+        <div class="plan-feat">
+          Aviso en inicio<br>
+          Aviso en directorio<br>
+          Aviso en perfiles<br>
+          Teléfono clickeable
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 8: VENTAJAS COMPETITIVAS ====== -->
+<div class="slide" id="s8">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Ventajas competitivas</div>
+    <div class="slide-title">¿Por qué Soluciona Ya<br>va a ganar?</div>
+    <div class="gold-line center"></div>
+    <div class="vc-grid">
+      <div class="vc-card">
+        <div class="vc-icon">📍</div>
+        <div>
+          <div class="vc-title">Enfoque 100% regional</div>
+          <div class="vc-desc">Diseñada específicamente para la Sexta Región. Plataformas nacionales ignoran a las comunas rurales como Pichilemu, Litueche o Las Cabras.</div>
+        </div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-icon">💰</div>
+        <div>
+          <div class="vc-title">Modelo sin comisiones</div>
+          <div class="vc-desc">Los profesionales pagan solo por el contacto, no comisión del trabajo. Esto genera más confianza y adopción más rápida.</div>
+        </div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-icon">🏪</div>
+        <div>
+          <div class="vc-title">Mini-sitio tipo Google Business</div>
+          <div class="vc-desc">Cada profesional tiene su propio perfil público con fotos, CV, calificaciones y reseñas — algo que plataformas como Yapo no ofrecen.</div>
+        </div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-icon">🚀</div>
+        <div>
+          <div class="vc-title">App funcional ya construida</div>
+          <div class="vc-desc">El producto ya está desarrollado y funcionando. No se pide dinero para construir — se pide para crecer.</div>
+        </div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-icon">📱</div>
+        <div>
+          <div class="vc-title">Notificaciones en tiempo real</div>
+          <div class="vc-desc">El profesional recibe email inmediato cuando aparece una solicitud en su categoría y comuna. Alta tasa de respuesta.</div>
+        </div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-icon">🔁</div>
+        <div>
+          <div class="vc-title">Escalable a otras regiones</div>
+          <div class="vc-desc">La plataforma está lista para replicarse en cualquier región de Chile con costos marginales bajos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 9: ESTADO ACTUAL ====== -->
+<div class="slide" id="s9">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Estado actual</div>
+    <div class="slide-title">Producto construido,<br>listo para escalar</div>
+    <div class="gold-line center"></div>
+    <div class="trac-grid" style="margin-bottom:28px;">
+      <div class="trac-card">
+        <div class="trac-num">✅</div>
+        <div class="trac-label">Plataforma web<br>100% funcional</div>
+      </div>
+      <div class="trac-card">
+        <div class="trac-num">31</div>
+        <div class="trac-label">Comunas<br>integradas</div>
+      </div>
+      <div class="trac-card">
+        <div class="trac-num">35+</div>
+        <div class="trac-label">Categorías<br>de servicios</div>
+      </div>
+      <div class="trac-card">
+        <div class="trac-num">4</div>
+        <div class="trac-label">Fuentes de<br>ingresos activas</div>
+      </div>
+    </div>
+    <div style="max-width:620px; width:100%;">
+      <div style="font-weight:700; font-size:.88rem; color:var(--gold-light); margin-bottom:14px; text-transform:uppercase; letter-spacing:.05em;">Hitos completados</div>
+      <div class="milestone"><div class="ms-dot ms-done"></div><div><strong>Plataforma web completa</strong> — Clientes, profesionales, admin, pagos, evaluaciones</div></div>
+      <div class="milestone"><div class="ms-dot ms-done"></div><div><strong>Sistema de planes</strong> — Básico, Pro ($9.990) y Élite ($24.990) con beneficios diferenciados</div></div>
+      <div class="milestone"><div class="ms-dot ms-done"></div><div><strong>Mini-sitio profesional</strong> — Perfil público con fotos, CV, reseñas y calificaciones</div></div>
+      <div class="milestone"><div class="ms-dot ms-done"></div><div><strong>Sistema de publicidad</strong> — Avisos de empresas en páginas clave de la plataforma</div></div>
+      <div class="milestone"><div class="ms-dot"></div><div style="color:rgba(255,255,255,.55);">Próximo: App móvil nativa (iOS/Android)</div></div>
+      <div class="milestone"><div class="ms-dot"></div><div style="color:rgba(255,255,255,.55);">Próximo: Expansión a Región Metropolitana y O'Higgins Sur</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 10: INVERSIÓN ====== -->
+<div class="slide" id="s10">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">Oportunidad de inversión</div>
+    <div class="slide-title">Buscamos socios<br>para crecer juntos</div>
+    <div class="inv-box">
+      <div class="ask-big">$5.000.000 CLP</div>
+      <div style="text-align:center; color:rgba(255,255,255,.6); font-size:.9rem; margin-bottom:8px;">Inversión inicial buscada (equity o préstamo participativo)</div>
+      <div class="use-grid">
+        <div class="use-card">
+          <div class="use-pct">40%</div>
+          <div class="use-label">Marketing digital<br>y adquisición de usuarios</div>
+        </div>
+        <div class="use-card">
+          <div class="use-pct">25%</div>
+          <div class="use-label">Desarrollo app móvil<br>iOS y Android</div>
+        </div>
+        <div class="use-card">
+          <div class="use-pct">20%</div>
+          <div class="use-label">Servidor cloud<br>y operaciones</div>
+        </div>
+        <div class="use-card">
+          <div class="use-pct">15%</div>
+          <div class="use-label">Equipo de ventas<br>y atención al cliente</div>
+        </div>
+      </div>
+      <div style="background:rgba(201,146,10,.12); border:1px solid rgba(201,146,10,.3); border-radius:12px; padding:16px 20px; margin-top:22px; text-align:center; font-size:.9rem;">
+        💡 Con esta inversión proyectamos <strong style="color:var(--gold-light);">recuperar la inversión en 8 meses</strong> y alcanzar <strong style="color:var(--gold-light);">$2.900.000/mes</strong> al cierre del año 2.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 11: EQUIPO ====== -->
+<div class="slide" id="s11">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="slide-tag">El equipo</div>
+    <div class="slide-title">Personas reales<br>con visión regional</div>
+    <div class="gold-line center"></div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">G</div>
+        <div class="team-name">María Graciela Lira A.</div>
+        <div class="team-role">Fundadora & CEO</div>
+        <div class="team-desc">Emprendedora de la Sexta Región con visión de conectar a los profesionales locales con quienes los necesitan.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:linear-gradient(135deg,#1a56db,#1e40af);">T</div>
+        <div class="team-name">Equipo Técnico</div>
+        <div class="team-role">Desarrollo & Tecnología</div>
+        <div class="team-desc">Plataforma web completa desarrollada con Node.js, base de datos, APIs y panel de administración.</div>
+      </div>
+    </div>
+    <div style="margin-top:28px; background:rgba(255,255,255,.06); border-radius:12px; padding:16px 22px; max-width:560px; text-align:center; font-size:.88rem; color:rgba(255,255,255,.65);">
+      🤝 Buscamos sumar a un <strong style="color:white;">socio comercial o de ventas</strong> con red de contactos en la región para acelerar la adquisición de profesionales.
+    </div>
+  </div>
+</div>
+
+<!-- ====== SLIDE 12: CIERRE ====== -->
+<div class="slide" id="s12">
+  <div class="bg-grid"></div>
+  <div class="slide-inner">
+    <div class="logo-big">🏘️</div>
+    <div class="close-big">La Sexta Región merece<br>su propia plataforma.</div>
+    <div style="font-size:1rem; color:rgba(255,255,255,.65); margin-top:18px; max-width:480px; line-height:1.7; text-align:center;">
+      Soluciona Ya ya existe, ya funciona y ya está lista para crecer.<br>Únete a este proyecto.
+    </div>
+    <div class="contact-pitch">
+      <div class="cp-item">📧 gracielalira@gmail.com</div>
+      <div class="cp-item">🌐 SolucionaYa.cl</div>
+      <div class="cp-item">📍 Rancagua, VI Región</div>
+    </div>
+    <div style="margin-top:28px;">
+      <a href="/" style="display:inline-block; background:var(--gold-light); color:white; padding:14px 32px; border-radius:50px; font-weight:700; text-decoration:none; font-size:.95rem;">
+        Ver la plataforma en vivo →
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <button class="nav-btn" onclick="cambiarSlide(-1)">‹</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-count" id="nav-count">1 / 12</span>
+  <button class="nav-btn" onclick="cambiarSlide(1)">›</button>
+</div>
+
+<script>
+  const TOTAL = 12;
+  let current = 1;
+
+  // Crear dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => irA(i);
+    dotsEl.appendChild(d);
+  }
+
+  function irA(n) {
+    document.getElementById(`s${current}`).classList.remove('active');
+    document.querySelectorAll('.dot')[current-1].classList.remove('active');
+    current = Math.max(1, Math.min(TOTAL, n));
+    document.getElementById(`s${current}`).classList.add('active');
+    document.querySelectorAll('.dot')[current-1].classList.add('active');
+    document.getElementById('nav-count').textContent = `${current} / ${TOTAL}`;
+  }
+
+  function cambiarSlide(dir) { irA(current + dir); }
+
+  // Teclado
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') cambiarSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') cambiarSlide(-1);
+  });
+
+  // Touch swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  document.addEventListener('touchend',   e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) cambiarSlide(diff > 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Soluciona Ya",
+    "slug": "soluciona-ya",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#00a651"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "cl.solucionaya.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#00a651"
+      },
+      "package": "cl.solucionaya.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

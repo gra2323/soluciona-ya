@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya - Profesionales y Servicios Sexta Región</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#00a651">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Soluciona Ya">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <style>
+    .hero {
+      background: linear-gradient(135deg, #007a3d 0%, #00a651 55%, #007a3d 100%);
+      color: white; padding: 90px 24px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-title { font-size: 2.7rem; font-weight: 800; margin-bottom: 16px; position: relative; line-height: 1.2; }
+    .hero-subtitle { font-size: 1.15rem; opacity: .9; max-width: 580px; margin: 0 auto 36px; position: relative; }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-hero-a { background: #c9920a; color: white; padding: 15px 32px; border-radius: 50px; font-weight: 700; font-size: .98rem; }
+    .btn-hero-a:hover { background: #b8860b; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,146,10,.4); }
+    .btn-hero-b { background: transparent; color: white; border: 2px solid white; padding: 15px 32px; border-radius: 50px; font-weight: 700; font-size: .98rem; }
+    .btn-hero-b:hover { background: rgba(255,255,255,.15); transform: translateY(-2px); }
+
+    .how-works { padding: 60px 24px; }
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; max-width: 860px; margin: 0 auto; }
+    .step { text-align: center; padding: 20px; }
+    .step-icon { font-size: 2.8rem; margin-bottom: 12px; }
+    .step-num { display: inline-flex; width: 34px; height: 34px; background: var(--primary); color: white; border-radius: 50%; align-items: center; justify-content: center; font-weight: 700; font-size: .88rem; margin-bottom: 10px; }
+    .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .step-desc { font-size: .87rem; color: var(--text-light); }
+
+    .cat-section { padding: 48px 24px; background: white; }
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 14px; max-width: 880px; margin: 0 auto; }
+    .cat-item { text-align: center; padding: 18px 10px; border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all .2s; text-decoration: none; color: var(--text); }
+    .cat-item:hover { border-color: var(--primary); background: #e3f2fd; transform: translateY(-2px); }
+    .cat-icon { font-size: 1.9rem; margin-bottom: 7px; }
+    .cat-name { font-size: .82rem; font-weight: 600; }
+
+    .cta { background: linear-gradient(135deg, #007a3d, #00a651); color: white; padding: 60px 24px; text-align: center; }
+    footer { background: #006633; color: rgba(255,255,255,.6); text-align: center; padding: 22px; font-size: .88rem; }
+
+    /* Publicidad */
+    .pub-section { padding: 36px 24px; background: #f4f6f9; }
+    .pub-header { display: flex; align-items: center; justify-content: space-between; max-width: 1060px; margin: 0 auto 18px; flex-wrap: wrap; gap: 10px; }
+    .pub-label { font-size: .72rem; font-weight: 700; color: var(--text-light); letter-spacing: .06em; text-transform: uppercase; background: white; border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; }
+    .pub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-width: 1060px; margin: 0 auto; }
+    .pub-card { border-radius: 14px; padding: 22px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.12); transition: transform .2s, box-shadow .2s; position: relative; overflow: hidden; }
+    .pub-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,.18); }
+    .pub-empresa { font-size: 1.05rem; font-weight: 800; }
+    .pub-desc { font-size: .88rem; opacity: .9; line-height: 1.55; }
+    .pub-contact { margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+    .pub-btn { padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: .82rem; text-decoration: none; transition: opacity .2s; display: inline-flex; align-items: center; gap: 5px; }
+    .pub-btn:hover { opacity: .85; }
+    .pub-tag { position: absolute; top: 10px; right: 10px; font-size: .65rem; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 10px; }
+    @media(max-width:768px) { .pub-grid { grid-template-columns: 1fr; } }
+
+    @media(max-width:768px){ .hero-title{font-size:1.85rem;} .steps{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🏘️ Soluciona <span class="brand-ya">Ya</span></a>
+  <div class="navbar-nav">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="/directorio.html">Directorio</a>
+    <a href="/planes.html">Planes</a>
+    <a href="/publicitar.html" style="color:#c9920a; font-weight:700;">Publicitar</a>
+    <a href="/auth.html" style="background:rgba(255,255,255,.18); border-radius:8px;">Ingresar</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1 class="hero-title">Profesionales y Servicios<br>en la Sexta Región</h1>
+  <p class="hero-subtitle">Conectamos a quienes necesitan un servicio con los mejores profesionales de la Región del Libertador General Bernardo O'Higgins</p>
+  <div class="hero-buttons">
+    <a href="/auth.html?tipo=cliente" class="btn btn-hero-a">🔍 Necesito un profesional</a>
+    <a href="/auth.html?tipo=profesional" class="btn btn-hero-b">💼 Ofrezco mis servicios</a>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-number">31</div><div class="stat-label">Comunas cubiertas</div></div>
+  <div class="stat-item"><div class="stat-number">18+</div><div class="stat-label">Categorías de servicio</div></div>
+  <div class="stat-item"><div class="stat-number">$1.000</div><div class="stat-label">Por contacto desbloqueado</div></div>
+  <div class="stat-item"><div class="stat-number">100%</div><div class="stat-label">Gratis para clientes</div></div>
+</div>
+
+<section class="how-works" id="como-funciona">
+  <div class="container">
+    <h2 style="text-align:center; font-size:1.75rem; margin-bottom:8px;">¿Cómo funciona?</h2>
+    <p style="text-align:center; color:var(--text-light); margin-bottom:40px; font-size:.9rem;">Simple, rápido y directo</p>
+
+    <h3 style="text-align:center; margin-bottom:22px; color:var(--primary); font-size:1.05rem;">Para quienes buscan un profesional</h3>
+    <div class="steps" style="margin-bottom:40px;">
+      <div class="step"><div class="step-icon">📝</div><div class="step-num">1</div><div class="step-title">Publica tu solicitud</div><div class="step-desc">Describe qué necesitas, en qué comuna y tu presupuesto aproximado. Es gratis.</div></div>
+      <div class="step"><div class="step-icon">⏳</div><div class="step-num">2</div><div class="step-title">Los profesionales te ven</div><div class="step-desc">Profesionales de la región revisan tu solicitud y pagan para contactarte.</div></div>
+      <div class="step"><div class="step-icon">✅</div><div class="step-num">3</div><div class="step-title">Recibe contactos</div><div class="step-desc">Elige al profesional que más te convenza y coordina el trabajo directamente.</div></div>
+    </div>
+
+    <h3 style="text-align:center; margin-bottom:22px; color:var(--secondary); font-size:1.05rem;">Para profesionales</h3>
+    <div class="steps">
+      <div class="step"><div class="step-icon">🔐</div><div class="step-num">1</div><div class="step-title">Crea tu perfil</div><div class="step-desc">Regístrate indicando tu especialidad. Perfil gratuito siempre.</div></div>
+      <div class="step"><div class="step-icon">🔍</div><div class="step-num">2</div><div class="step-title">Encuentra trabajo</div><div class="step-desc">Filtra solicitudes por categoría y comuna para encontrar lo que te interesa.</div></div>
+      <div class="step"><div class="step-icon">📞</div><div class="step-num">3</div><div class="step-title">Desbloquea el contacto</div><div class="step-desc">Por solo $1.000 CLP accedes al teléfono y email del cliente para cotizar.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section">
+  <div class="container">
+    <h2 style="text-align:center; font-size:1.75rem; margin-bottom:8px;">Categorías de servicios</h2>
+    <p style="text-align:center; color:var(--text-light); margin-bottom:30px; font-size:.9rem;">Encuentra el profesional que necesitas en toda la Sexta Región</p>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🔨 Profesionales del hogar</h3>
+    <div class="cat-grid" style="margin-bottom:30px;">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">⚡</div><div class="cat-name">Electricidad</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🔧</div><div class="cat-name">Gasfitería</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🪵</div><div class="cat-name">Carpintería</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🎨</div><div class="cat-name">Pintura</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🌿</div><div class="cat-name">Jardinería</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏠</div><div class="cat-name">Limpieza de Casas</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🧹</div><div class="cat-name">Aseo y Limpieza</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏗️</div><div class="cat-name">Construcción</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">❄️</div><div class="cat-name">Climatización</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🔑</div><div class="cat-name">Cerrajería</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🔩</div><div class="cat-name">Plomería</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🚗</div><div class="cat-name">Mecánica</div></a>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🏨 Alojamiento y turismo</h3>
+    <div class="cat-grid" style="margin-bottom:30px;">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏨</div><div class="cat-name">Hotel</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏠</div><div class="cat-name">Hostal</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🛖</div><div class="cat-name">Cabaña / Arriendo</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏢</div><div class="cat-name">Apart Hotel</div></a>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🚗 Transporte</h3>
+    <div class="cat-grid" style="margin-bottom:30px;">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🚚</div><div class="cat-name">Fletes</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🚕</div><div class="cat-name">Taxi / Transfer</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">📱</div><div class="cat-name">Uber / App Transporte</div></a>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🧴 Artículos y productos</h3>
+    <div class="cat-grid" style="margin-bottom:30px;">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🧴</div><div class="cat-name">Artículos de Aseo</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🛒</div><div class="cat-name">Artículos del Hogar</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">📦</div><div class="cat-name">Venta de Productos</div></a>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🎓 Profesionales universitarios</h3>
+    <div class="cat-grid" style="margin-bottom:30px;">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">⚖️</div><div class="cat-name">Abogado</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">📐</div><div class="cat-name">Arquitecto</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🧾</div><div class="cat-name">Contador / Auditor</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">⚙️</div><div class="cat-name">Ingeniero</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🩺</div><div class="cat-name">Médico / Especialista</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🧠</div><div class="cat-name">Psicólogo</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🥗</div><div class="cat-name">Nutricionista</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🦴</div><div class="cat-name">Kinesiólogo</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">💊</div><div class="cat-name">Enfermero / Técnico</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🎨</div><div class="cat-name">Diseñador Gráfico</div></a>
+    </div>
+
+    <h3 style="font-size:1rem; font-weight:700; color:var(--primary); margin-bottom:14px; padding-left:4px;">🛎️ Otros servicios</h3>
+    <div class="cat-grid">
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">💻</div><div class="cat-name">Computación</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">📚</div><div class="cat-name">Clases Particulares</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">💇</div><div class="cat-name">Belleza</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🍽️</div><div class="cat-name">Catering</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">📷</div><div class="cat-name">Fotografía</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🏥</div><div class="cat-name">Salud y Bienestar</div></a>
+      <a href="/auth.html" class="cat-item"><div class="cat-icon">🎈</div><div class="cat-name">Centro de Eventos Infantiles</div></a>
+    </div>
+  </div>
+</section>
+
+<section style="padding:60px 24px; background:#f0f4f8;">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,#fff8e1,#fff3cd); border:2px solid #ffe082; border-radius:20px; padding:40px; text-align:center; max-width:820px; margin:0 auto;">
+      <div style="font-size:3rem; margin-bottom:14px;">🏠🔧🎨⚡</div>
+      <h2 style="font-size:1.75rem; font-weight:800; margin-bottom:12px; color:#5d4037;">¿Necesitas ayuda con varios servicios?</h2>
+      <p style="font-size:1rem; color:#6d4c41; margin-bottom:22px; max-width:580px; margin-left:auto; margin-right:auto; line-height:1.7;">
+        Si necesitas electricista, gasfiter, pintor u otros profesionales para un mismo proyecto — publica una solicitud describiendo todo lo que necesitas y te contactarán los profesionales indicados.
+      </p>
+      <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:22px;">
+        <div style="background:white; border-radius:12px; padding:14px 20px; font-size:.88rem; font-weight:600; color:#5d4037; box-shadow:0 2px 8px rgba(0,0,0,.08);">🏗️ Remodelación completa</div>
+        <div style="background:white; border-radius:12px; padding:14px 20px; font-size:.88rem; font-weight:600; color:#5d4037; box-shadow:0 2px 8px rgba(0,0,0,.08);">🏠 Limpieza + mantención</div>
+        <div style="background:white; border-radius:12px; padding:14px 20px; font-size:.88rem; font-weight:600; color:#5d4037; box-shadow:0 2px 8px rgba(0,0,0,.08);">🔨 Arreglos generales</div>
+        <div style="background:white; border-radius:12px; padding:14px 20px; font-size:.88rem; font-weight:600; color:#5d4037; box-shadow:0 2px 8px rgba(0,0,0,.08);">🌿 Casa + jardín</div>
+      </div>
+      <a href="/auth.html?tipo=cliente" class="btn" style="background:#c9920a; color:white; border-radius:50px; padding:14px 32px; font-weight:700; font-size:1rem;">
+        Publicar mi solicitud gratis →
+      </a>
+      <p style="margin-top:14px; font-size:.82rem; color:#8d6e63;">100% gratis para clientes · Los profesionales te contactan a ti</p>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICIDAD -->
+<div class="pub-section" id="pub-section" style="display:none;">
+  <div class="pub-header">
+    <div>
+      <h2 style="font-size:1.2rem; font-weight:800; margin-bottom:2px;">📢 Destacados y Publicidad</h2>
+      <p style="font-size:.84rem; color:var(--text-light);">Negocios y servicios de la Sexta Región</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span class="pub-label">Publicidad</span>
+      <a href="/publicitar.html" class="btn btn-sm btn-outline" style="font-size:.8rem;">+ Pautar mi negocio</a>
+    </div>
+  </div>
+  <div class="pub-grid" id="pub-grid"></div>
+</div>
+
+<section class="cta" style="background: linear-gradient(135deg, #007a3d 0%, #00a651 100%);">
+  <h2 style="font-size:1.9rem; margin-bottom:12px;">¿Listo para comenzar?</h2>
+  <p style="opacity:.9; font-size:1rem; margin-bottom:32px;">Únete a la comunidad de la Sexta Región — siempre gratis para clientes</p>
+  <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+    <a href="/auth.html?tipo=cliente" class="btn" style="background:#c9920a; color:white; border-radius:50px; padding:14px 28px; font-weight:700;">Publicar una solicitud gratis</a>
+    <a href="/auth.html?tipo=profesional" class="btn" style="background:transparent; color:white; border:2px solid rgba(255,255,255,.6); border-radius:50px; padding:14px 28px; font-weight:700;">Registrarme como profesional</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2024 Soluciona Ya — Conectando la Sexta Región</p>
+  <p style="margin-top:6px;">Rancagua, San Fernando, Santa Cruz y las 31 comunas de la Región del Libertador</p>
+</footer>
+
+<script>
+  fetch('/api/auth/me').then(r => r.json()).then(u => {
+    if (u && u.id) window.location.href = u.tipo === 'cliente' ? '/dashboard-cliente.html' : '/dashboard-profesional.html';
+  }).catch(() => {});
+
+  // Registrar Service Worker (PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+
+  // Cargar publicidades activas
+  fetch('/api/publicidad').then(r => r.json()).then(ads => {
+    if (!ads.length) return;
+    const sec = document.getElementById('pub-section');
+    const grid = document.getElementById('pub-grid');
+    sec.style.display = '';
+    grid.innerHTML = ads.map(ad => {
+      const bgColor = ad.color_fondo || '#1a2744';
+      const txtColor = ad.color_texto || '#ffffff';
+      const btnBg = txtColor === '#ffffff' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+      const planLabel = ad.plan === 'mes' ? 'Anunciante mensual' : 'Anunciante semanal';
+      return `
+        <div class="pub-card" style="background:${bgColor}; color:${txtColor};">
+          <div class="pub-tag">${planLabel}</div>
+          ${ad.imagen ? `<img src="${ad.imagen}" alt="${ad.empresa}" style="width:100%; height:80px; object-fit:cover; border-radius:8px; margin-bottom:4px;">` : ''}
+          <div class="pub-empresa">${ad.empresa}</div>
+          <div class="pub-desc">${ad.descripcion}</div>
+          <div class="pub-contact">
+            <a class="pub-btn" href="tel:${ad.telefono}" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">
+              📞 ${ad.telefono}
+            </a>
+            ${ad.url ? `<a class="pub-btn" href="${ad.url}" target="_blank" rel="noopener" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">🌐 Ver más</a>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soluciona Ya — Panel Admin</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body { background: #1a1a2e; min-height: 100vh; }
+    .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .login-box { background: white; border-radius: 16px; padding: 36px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+    .admin-nav { background: #1a1a2e; color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .admin-nav-brand { font-weight: 800; font-size: 1.1rem; color: white; }
+    .admin-wrap { max-width: 1100px; margin: 28px auto; padding: 0 24px; }
+    .user-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 18px; background: white; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06); gap: 12px; flex-wrap: wrap; }
+    .user-info { flex: 1; min-width: 180px; }
+    .user-name { font-weight: 700; font-size: .95rem; }
+    .user-meta { font-size: .8rem; color: var(--text-light); margin-top: 3px; }
+    .user-saldo { font-size: 1.1rem; font-weight: 800; color: var(--secondary); min-width: 80px; text-align: right; }
+    .acciones { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .monto-input { width: 110px; padding: 7px 10px; border: 2px solid var(--border); border-radius: 8px; font-size: .88rem; }
+    .plan-badge { padding: 3px 10px; border-radius: 20px; font-size: .76rem; font-weight: 700; }
+    .plan-badge.basico  { background: #f0f4f8; color: #475569; }
+    .plan-badge.pro     { background: #e8f0fe; color: #1a56db; }
+    .plan-badge.elite   { background: #fef3c7; color: #92400e; }
+    .comunas-tag { font-size: .74rem; color: var(--text-light); max-width: 280px; }
+    /* Ranking bar */
+    .ranking-bar { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .ranking-bar:last-child { border-bottom: none; }
+    .ranking-name { font-weight: 600; font-size: .88rem; min-width: 120px; }
+    .ranking-fill { height: 10px; border-radius: 5px; background: var(--secondary); transition: width .4s; }
+    .ranking-count { font-size: .82rem; color: var(--text-light); min-width: 36px; text-align: right; }
+    .rank-num { font-size: .78rem; font-weight: 700; color: var(--text-light); min-width: 22px; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN ADMIN -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <div style="text-align:center; font-size:2rem; margin-bottom:8px;">🔐</div>
+    <h2 style="text-align:center; margin-bottom:4px; font-size:1.2rem;">Panel de Administración</h2>
+    <p style="text-align:center; color:var(--text-light); font-size:.85rem; margin-bottom:22px;">Soluciona Ya</p>
+    <div id="login-alert"></div>
+    <div class="form-group">
+      <label class="form-label">Contraseña de administrador</label>
+      <input type="password" class="form-control" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') loginAdmin()">
+    </div>
+    <button class="btn btn-primary w-full" onclick="loginAdmin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="admin-screen" class="hidden">
+  <nav class="admin-nav">
+    <span class="admin-nav-brand">⚙️ Soluciona Ya — Admin</span>
+    <button onclick="logoutAdmin()" class="btn btn-sm" style="background:rgba(255,255,255,.15); color:white;">Salir</button>
+  </nav>
+
+  <div class="admin-wrap">
+    <div id="admin-alert" style="margin-bottom:14px;"></div>
+
+    <!-- Stats rápidas -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:24px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:var(--primary);" id="stat-profs">–</div>
+        <div style="font-size:.82rem; color:var(--text-light);">Profesionales</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:#1a56db;" id="stat-pro">–</div>
+        <div style="font-size:.82rem; color:var(--text-light);">Plan Pro</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:#b8860b;" id="stat-elite">–</div>
+        <div style="font-size:.82rem; color:var(--text-light);">Plan Élite</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:var(--warning);" id="stat-clientes">–</div>
+        <div style="font-size:.82rem; color:var(--text-light);">Clientes</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:var(--secondary);" id="stat-solicitudes">–</div>
+        <div style="font-size:.82rem; color:var(--text-light);">Solicitudes</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start; flex-wrap:wrap;" id="main-grid">
+
+      <div>
+        <!-- Profesionales -->
+        <div class="card" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+            <h2 style="font-size:1.1rem; font-weight:700;">👷 Profesionales registrados</h2>
+            <button class="btn btn-primary btn-sm" onclick="loadUsuarios()">↻ Actualizar</button>
+          </div>
+          <div id="usuarios-lista">
+            <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+          </div>
+        </div>
+
+        <!-- Clientes -->
+        <div class="card">
+          <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:18px;">🔍 Clientes registrados</h2>
+          <div id="clientes-lista">
+            <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Publicidades pendientes y activas -->
+    <div class="card" style="margin-bottom:20px; grid-column: 1 / -1;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <h2 style="font-size:1.1rem; font-weight:700;">📢 Publicidades</h2>
+        <button class="btn btn-primary btn-sm" onclick="loadPublicidades()">↻ Actualizar</button>
+      </div>
+      <div id="pub-lista">
+        <div class="empty-state"><div class="empty-state-icon">⏳</div><p>Cargando...</p></div>
+      </div>
+    </div>
+
+    <!-- Ranking comunas -->
+      <div>
+        <div class="card" style="position:sticky; top:16px;">
+          <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">📊 Ranking de comunas</h2>
+          <p style="font-size:.82rem; color:var(--text-light); margin-bottom:16px;">Comunas con más solicitudes activas</p>
+          <div id="ranking-lista">
+            <div class="empty-state" style="padding:16px;"><p>Cargando...</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/utils.js"></script>
+<script>
+  const ADMIN_PASS = 'Nomeacuerdo1976.';
+
+  function loginAdmin() {
+    const pass = document.getElementById('admin-pass').value;
+    if (pass !== ADMIN_PASS) {
+      showAlert(document.getElementById('login-alert'), 'Contraseña incorrecta');
+      return;
+    }
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('admin-screen').classList.remove('hidden');
+    loadUsuarios();
+    loadRankingComunas();
+    loadPublicidades();
+  }
+
+  function logoutAdmin() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('admin-screen').classList.add('hidden');
+    document.getElementById('admin-pass').value = '';
+  }
+
+  async function loadRankingComunas() {
+    try {
+      const data = await apiFetch('/api/admin/stats-comunas');
+      const lista = document.getElementById('ranking-lista');
+      if (!data.length) { lista.innerHTML = '<p style="color:var(--text-light); font-size:.85rem;">Sin datos aún</p>'; return; }
+      const maxVal = data[0].total;
+      lista.innerHTML = data.slice(0, 15).map((r, i) => `
+        <div class="ranking-bar">
+          <span class="rank-num">#${i+1}</span>
+          <span class="ranking-name">${escapeHtml(r.comuna)}</span>
+          <div style="flex:1; background:#f0f4f8; border-radius:5px; overflow:hidden;">
+            <div class="ranking-fill" style="width:${Math.round(r.total/maxVal*100)}%;"></div>
+          </div>
+          <span class="ranking-count">${r.total}</span>
+        </div>
+      `).join('');
+
+      // Update stats
+      document.getElementById('stat-solicitudes').textContent = data.reduce((a,r) => a+r.total, 0);
+    } catch(err) { console.error(err); }
+  }
+
+  async function loadUsuarios() {
+    try {
+      const data = await apiFetch('/api/admin/usuarios');
+      const profs   = data.filter(u => u.tipo === 'profesional');
+      const clientes = data.filter(u => u.tipo === 'cliente');
+
+      document.getElementById('stat-profs').textContent    = profs.length;
+      document.getElementById('stat-pro').textContent      = profs.filter(p => p.plan_tipo === 'pro').length;
+      document.getElementById('stat-elite').textContent    = profs.filter(p => p.plan_tipo === 'elite').length;
+      document.getElementById('stat-clientes').textContent = clientes.length;
+
+      // Profesionales
+      const pl = document.getElementById('usuarios-lista');
+      if (!profs.length) { pl.innerHTML = '<p style="color:var(--text-light); font-size:.88rem;">No hay profesionales aún</p>'; }
+      else pl.innerHTML = profs.map(u => {
+        const planTipo = u.plan_tipo || 'basico';
+        const planIcons = { basico: '📋 Básico', pro: '⭐ Pro', elite: '👑 Élite' };
+        const comunasInfo = planTipo === 'elite' ? '📍 Todas las comunas' :
+          (u.comunas_habilitadas ? `📍 ${u.comunas_habilitadas}` : '📍 Sin comunas');
+        const expiraInfo = u.plan_expira ? `· Expira ${formatDate(u.plan_expira)}` : '';
+        return `
+        <div class="user-row">
+          <div class="user-info">
+            <div class="user-name">
+              ${escapeHtml(u.nombre)}
+              ${u.verificado ? '<span style="color:#b8860b; font-size:.8rem;">✓ Verificado</span>' : ''}
+            </div>
+            <div class="user-meta">
+              ${escapeHtml(u.email)} · ${escapeHtml(u.telefono || '')}
+              ${u.categoria ? `· <span class="badge badge-primary">${escapeHtml(u.categoria)}</span>` : ''}
+            </div>
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="plan-badge ${planTipo}">${planIcons[planTipo] || planTipo}</span>
+              <span style="font-size:.75rem; color:var(--text-light);">${expiraInfo}</span>
+            </div>
+            <div class="comunas-tag" style="margin-top:4px;">${comunasInfo}</div>
+          </div>
+          <div class="user-saldo">${formatMoney(u.saldo)}</div>
+          <div class="acciones">
+            <input type="number" class="monto-input" id="monto-${u.id}" placeholder="$monto" min="1000" step="1000">
+            <button class="btn btn-secondary btn-sm" onclick="acreditarSaldo(${u.id})">+ Saldo</button>
+            <div style="display:flex; gap:6px; flex-direction:column;">
+              ${planTipo !== 'pro'   ? `<button class="btn btn-sm" style="background:#e8f0fe; color:#1a56db;" onclick="activarSuscripcion(${u.id},'pro')">Activar Pro</button>` : ''}
+              ${planTipo !== 'elite' ? `<button class="btn btn-sm" style="background:#fef3c7; color:#92400e;" onclick="activarSuscripcion(${u.id},'elite')">Activar Élite</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `}).join('');
+
+      // Clientes
+      const cl = document.getElementById('clientes-lista');
+      if (!clientes.length) { cl.innerHTML = '<p style="color:var(--text-light); font-size:.88rem;">No hay clientes aún</p>'; }
+      else cl.innerHTML = clientes.map(u => `
+        <div class="user-row">
+          <div class="user-info">
+            <div class="user-name">${escapeHtml(u.nombre)}</div>
+            <div class="user-meta">${escapeHtml(u.email)} · ${escapeHtml(u.telefono || '')}</div>
+          </div>
+          <div style="font-size:.8rem; color:var(--text-light);">Registrado ${formatDate(u.created_at)}</div>
+        </div>
+      `).join('');
+    } catch(err) {
+      showAlert(document.getElementById('admin-alert'), err.message);
+    }
+  }
+
+  async function acreditarSaldo(userId) {
+    const input = document.getElementById(`monto-${userId}`);
+    const monto = parseInt(input.value);
+    if (!monto || monto < 1000) return showAlert(document.getElementById('admin-alert'), 'Ingresa un monto válido (mínimo $1.000)');
+    if (!confirm(`¿Acreditar ${formatMoney(monto)} a este profesional?`)) return;
+    try {
+      await apiFetch('/api/admin/acreditar', { method: 'POST', body: { userId, monto } });
+      showAlert(document.getElementById('admin-alert'), `✅ Se acreditaron ${formatMoney(monto)} correctamente.`, 'success');
+      input.value = '';
+      loadUsuarios();
+    } catch(err) { showAlert(document.getElementById('admin-alert'), err.message); }
+  }
+
+  async function activarSuscripcion(userId, tipo) {
+    const nombre = tipo === 'pro' ? 'Pro' : 'Élite';
+    const costo = tipo === 'pro' ? '$9.990' : '$24.990';
+    if (!confirm(`¿Activar el Plan ${nombre} (${costo}/mes) a este profesional?\n\nConfirma que ya recibiste el pago por transferencia.`)) return;
+    try {
+      await apiFetch('/api/admin/activar-suscripcion', { method: 'POST', body: { userId, tipo } });
+      showAlert(document.getElementById('admin-alert'), `✅ Plan ${nombre} activado correctamente.`, 'success');
+      loadUsuarios();
+    } catch(err) { showAlert(document.getElementById('admin-alert'), err.message); }
+  }
+
+  async function loadPublicidades() {
+    try {
+      const data = await apiFetch('/api/admin/publicidades');
+      const lista = document.getElementById('pub-lista');
+      if (!data.length) { lista.innerHTML = '<p style="color:var(--text-light); font-size:.88rem;">No hay publicidades aún</p>'; return; }
+      lista.innerHTML = data.map(p => {
+        const activo = p.activo === 1;
+        const expiraTxt = p.expira ? `· Expira ${formatDate(p.expira)}` : '';
+        return `
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); gap:14px; flex-wrap:wrap;">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <div style="width:36px; height:36px; border-radius:8px; background:${p.color_fondo||'#1a2744'}; flex-shrink:0; border:1px solid #ccc;"></div>
+              <div>
+                <div style="font-weight:700; font-size:.92rem;">${escapeHtml(p.empresa)}</div>
+                <div style="font-size:.8rem; color:var(--text-light); margin-top:2px;">${escapeHtml(p.descripcion)}</div>
+                <div style="font-size:.76rem; color:var(--text-light); margin-top:3px;">📞 ${escapeHtml(p.telefono)} · Plan: <strong>${p.plan}</strong> ${expiraTxt}</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
+              <span style="background:${activo ? '#e8f5e9' : '#ffebee'}; color:${activo ? '#2e7d32' : '#c62828'}; padding:3px 10px; border-radius:20px; font-size:.75rem; font-weight:700;">${activo ? '✅ Activo' : '⏳ Pendiente'}</span>
+              ${!activo ? `
+                <button class="btn btn-sm" style="background:#e8f0fe; color:#1a56db;" onclick="activarPub(${p.id}, 7)" title="Activar 7 días">7d</button>
+                <button class="btn btn-sm btn-primary" onclick="activarPub(${p.id}, 30)">Activar 30d</button>
+              ` : `
+                <button class="btn btn-sm btn-outline" onclick="desactivarPub(${p.id})">Desactivar</button>
+              `}
+              <button class="btn btn-sm btn-danger" onclick="eliminarPub(${p.id})">🗑</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch(err) { showAlert(document.getElementById('admin-alert'), err.message); }
+  }
+
+  async function activarPub(id, dias) {
+    if (!confirm(`¿Activar este aviso por ${dias} días? Confirma que ya recibiste el pago.`)) return;
+    try {
+      await apiFetch('/api/admin/publicidad/activar', { method: 'POST', body: { id, dias } });
+      showAlert(document.getElementById('admin-alert'), '✅ Publicidad activada.', 'success');
+      loadPublicidades();
+    } catch(err) { showAlert(document.getElementById('admin-alert'), err.message); }
+  }
+
+  async function desactivarPub(id) {
+    if (!confirm('¿Desactivar este aviso?')) return;
+    await apiFetch('/api/admin/publicidad/desactivar', { method: 'POST', body: { id } });
+    loadPublicidades();
+  }
+
+  async function eliminarPub(id) {
+    if (!confirm('¿Eliminar este aviso permanentemente?')) return;
+    await apiFetch(`/api/admin/publicidad/${id}`, { method: 'DELETE' });
+    loadPublicidades();
+  }
+
+  // Responsive: en mobile mostrar columna única
+  if (window.innerWidth < 768) {
+    document.getElementById('main-grid').style.gridTemplateColumns = '1fr';
+  }
+</script>
+</body>
+</html>
