@@ -116,6 +116,10 @@
       <div id="pub-tel-error" style="color:var(--danger); font-size:.78rem; margin-top:4px; display:none;">⚠ Teléfono chileno inválido</div>
     </div>
     <div class="form-group">
+      <label class="form-label">WhatsApp <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(opcional — aparece botón verde)</span></label>
+      <input type="tel" class="form-control" id="pub-whatsapp" placeholder="+56 9 1234 5678" oninput="updatePreview()">
+    </div>
+    <div class="form-group">
       <label class="form-label">Sitio web o red social <span style="font-weight:400; font-size:.8rem; color:var(--text-light);">(opcional)</span></label>
       <input type="url" class="form-control" id="pub-url" placeholder="https://tuempresa.cl" oninput="updatePreview()">
     </div>
@@ -150,11 +154,15 @@
       <div class="preview-ad" id="preview-card" style="background:#1a2744; color:#ffffff;">
         <div style="font-size:.65rem; font-weight:700; background:rgba(255,255,255,.2); padding:2px 8px; border-radius:10px; display:inline-block; margin-bottom:10px;" id="prev-tag">Anunciante mensual</div>
         <div id="prev-img"></div>
-        <div style="font-size:1.05rem; font-weight:800; margin-bottom:6px;" id="prev-empresa">Tu negocio aquí</div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <div id="prev-logo" style="width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;flex-shrink:0;">T</div>
+          <div style="font-size:1.05rem; font-weight:800;" id="prev-empresa">Tu negocio aquí</div>
+        </div>
         <div style="font-size:.88rem; opacity:.9; line-height:1.55; margin-bottom:12px;" id="prev-desc">Descripción de tu aviso...</div>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <span style="padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);" id="prev-tel">📞 +56 9 XXXX XXXX</span>
-          <span id="prev-url" style="display:none; padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);">🌐 Ver más</span>
+          <span style="padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);" id="prev-tel">📞 Llamar</span>
+          <span id="prev-wa" style="display:none; padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:#25d366; color:#fff;">💬 WhatsApp</span>
+          <span id="prev-url" style="display:none; padding:8px 16px; border-radius:50px; font-weight:700; font-size:.82rem; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3);">🌐 Web</span>
         </div>
       </div>
     </div>
@@ -226,11 +234,15 @@
     const desc    = document.getElementById('pub-descripcion').value || 'Descripción de tu aviso...';
     const tel     = document.getElementById('pub-telefono').value || '+56 9 XXXX XXXX';
     const url     = document.getElementById('pub-url').value;
+    const wa      = document.getElementById('pub-whatsapp').value;
     document.getElementById('prev-empresa').textContent = empresa;
     document.getElementById('prev-desc').textContent = desc;
-    document.getElementById('prev-tel').textContent = `📞 ${tel}`;
+    document.getElementById('prev-tel').textContent = `📞 Llamar`;
+    document.getElementById('prev-logo').textContent = empresa.charAt(0).toUpperCase() || 'T';
     const urlEl = document.getElementById('prev-url');
     urlEl.style.display = url ? 'inline-block' : 'none';
+    const waEl = document.getElementById('prev-wa');
+    waEl.style.display = wa ? 'inline-block' : 'none';
     document.getElementById('char-count').textContent = document.getElementById('pub-descripcion').value.length;
     updateGlosa();
   }
@@ -263,6 +275,7 @@
     const empresa = document.getElementById('pub-empresa').value.trim();
     const descripcion = document.getElementById('pub-descripcion').value.trim();
     const telefono = document.getElementById('pub-telefono').value.trim();
+    const whatsapp = document.getElementById('pub-whatsapp').value.trim();
     const url = document.getElementById('pub-url').value.trim();
     const plan = document.getElementById('plan-mes').checked ? 'mes' : 'semana';
 
@@ -278,7 +291,9 @@
 
     try {
       await apiFetch('/api/publicidad/solicitar', { method: 'POST', body: {
-        empresa, descripcion, telefono, url: url || null,
+        empresa, descripcion, telefono,
+        whatsapp: whatsapp || null,
+        url: url || null,
         imagen: imagenBase64 || null,
         color_fondo: colorFondo, color_texto: colorTexto, plan
       }});

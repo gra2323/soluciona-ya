@@ -159,8 +159,10 @@ db.exec(`
     empresa TEXT NOT NULL,
     descripcion TEXT NOT NULL,
     telefono TEXT NOT NULL,
+    whatsapp TEXT,
     url TEXT,
     imagen TEXT,
+    logo TEXT,
     color_fondo TEXT DEFAULT '#1a2744',
     color_texto TEXT DEFAULT '#ffffff',
     plan TEXT NOT NULL DEFAULT 'semana',
@@ -224,15 +226,15 @@ for (const s of solicitudesDemo) {
 }
 
 // Publicidades demo
-db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,url,color_fondo,color_texto,plan,activo,expira) VALUES (?,?,?,?,?,?,?,1,datetime('now','+30 days'))`).run(
+db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,whatsapp,url,imagen,logo,color_fondo,color_texto,plan,activo,expira) VALUES (?,?,?,?,?,?,?,?,?,?,1,datetime('now','+30 days'))`).run(
   'Ferretería El Tornillo',
   'Todo en materiales de construcción y ferretería. Despacho a toda la Sexta Región.',
-  '+56 9 7654 3210', null, '#1a2744', '#ffffff', 'mes'
+  '+56 9 7654 3210', '+56976543210', null, null, null, '#1a2744', '#ffffff', 'mes'
 );
-db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,url,color_fondo,color_texto,plan,activo,expira) VALUES (?,?,?,?,?,?,?,1,datetime('now','+7 days'))`).run(
+db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,whatsapp,url,imagen,logo,color_fondo,color_texto,plan,activo,expira) VALUES (?,?,?,?,?,?,?,?,?,?,1,datetime('now','+7 days'))`).run(
   'Hotel Pichilemu Mar',
   '¡Temporada alta! Habitaciones con vista al mar. Reservas directas con 10% dcto.',
-  '+56 9 1122 3344', null, '#b8860b', '#ffffff', 'semana'
+  '+56 9 1122 3344', '+56911223344', null, null, null, '#b8860b', '#ffffff', 'semana'
 );
 
 // ===================== MIDDLEWARE =====================
@@ -689,18 +691,18 @@ function validarTelefonoChileno(tel) {
 }
 
 app.get('/api/publicidad', (req, res) => {
-  const ads = db.prepare(`SELECT id,empresa,descripcion,telefono,url,imagen,color_fondo,color_texto,plan FROM publicidades WHERE activo=1 AND (expira IS NULL OR expira > datetime('now')) ORDER BY CASE plan WHEN 'mes' THEN 1 ELSE 2 END, created_at ASC`).all();
+  const ads = db.prepare(`SELECT id,empresa,descripcion,telefono,whatsapp,url,imagen,logo,color_fondo,color_texto,plan FROM publicidades WHERE activo=1 AND (expira IS NULL OR expira > datetime('now')) ORDER BY CASE plan WHEN 'mes' THEN 1 ELSE 2 END, created_at ASC`).all();
   res.json(ads);
 });
 
 app.post('/api/publicidad/solicitar', (req, res) => {
-  const { empresa, descripcion, telefono, url, imagen, color_fondo, color_texto, plan } = req.body;
+  const { empresa, descripcion, telefono, whatsapp, url, imagen, logo, color_fondo, color_texto, plan } = req.body;
   if (!empresa || !descripcion || !telefono) return res.status(400).json({ error: 'Faltan campos obligatorios' });
   if (!validarTelefonoChileno(telefono)) return res.status(400).json({ error: 'Teléfono inválido. Usa formato chileno: +56 9 XXXX XXXX' });
   const planesValidos = ['semana', 'mes'];
   if (!planesValidos.includes(plan)) return res.status(400).json({ error: 'Plan inválido' });
-  const r = db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,url,imagen,color_fondo,color_texto,plan) VALUES (?,?,?,?,?,?,?,?)`).run(
-    empresa, descripcion, telefono, url||null, imagen||null,
+  const r = db.prepare(`INSERT INTO publicidades (empresa,descripcion,telefono,whatsapp,url,imagen,logo,color_fondo,color_texto,plan) VALUES (?,?,?,?,?,?,?,?,?,?)`).run(
+    empresa, descripcion, telefono, whatsapp||null, url||null, imagen||null, logo||null,
     color_fondo||'#1a2744', color_texto||'#ffffff', plan
   );
   res.json({ ok: true, id: r.lastInsertRowid, msg: 'Solicitud recibida. Se activará tras verificar tu pago.' });

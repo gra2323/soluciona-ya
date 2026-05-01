@@ -236,6 +236,7 @@
   <p style="margin-top:6px;">Rancagua, San Fernando, Santa Cruz y las 31 comunas de la Región del Libertador</p>
 </footer>
 
+<script src="/utils.js"></script>
 <script>
   fetch('/api/auth/me').then(r => r.json()).then(u => {
     if (u && u.id) window.location.href = u.tipo === 'cliente' ? '/dashboard-cliente.html' : '/dashboard-profesional.html';
@@ -255,19 +256,22 @@
     grid.innerHTML = ads.map(ad => {
       const bgColor = ad.color_fondo || '#1a2744';
       const txtColor = ad.color_texto || '#ffffff';
-      const btnBg = txtColor === '#ffffff' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
-      const planLabel = ad.plan === 'mes' ? 'Anunciante mensual' : 'Anunciante semanal';
+      const btnBg = 'rgba(255,255,255,0.18)';
+      const planLabel = ad.plan === 'mes' ? '⭐ Anunciante mensual' : 'Anunciante semanal';
+      const waNum = (ad.whatsapp||'').replace(/\D/g,'');
       return `
         <div class="pub-card" style="background:${bgColor}; color:${txtColor};">
           <div class="pub-tag">${planLabel}</div>
-          ${ad.imagen ? `<img src="${ad.imagen}" alt="${ad.empresa}" style="width:100%; height:80px; object-fit:cover; border-radius:8px; margin-bottom:4px;">` : ''}
-          <div class="pub-empresa">${ad.empresa}</div>
-          <div class="pub-desc">${ad.descripcion}</div>
+          ${ad.imagen ? `<img src="${ad.imagen}" alt="${ad.empresa}" style="width:100%; height:90px; object-fit:cover; border-radius:8px; margin-bottom:10px;">` : ''}
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            ${ad.logo ? `<img src="${ad.logo}" alt="logo" style="width:44px; height:44px; border-radius:8px; object-fit:contain; background:rgba(255,255,255,.15); padding:4px;">` : `<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;">${escapeHtml(ad.empresa.charAt(0))}</div>`}
+            <div class="pub-empresa" style="margin:0;">${escapeHtml(ad.empresa)}</div>
+          </div>
+          <div class="pub-desc">${escapeHtml(ad.descripcion)}</div>
           <div class="pub-contact">
-            <a class="pub-btn" href="tel:${ad.telefono}" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">
-              📞 ${ad.telefono}
-            </a>
-            ${ad.url ? `<a class="pub-btn" href="${ad.url}" target="_blank" rel="noopener" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">🌐 Ver más</a>` : ''}
+            <a class="pub-btn" href="tel:${escapeHtml(ad.telefono)}" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">📞 Llamar</a>
+            ${waNum ? `<a class="pub-btn" href="https://wa.me/${waNum}" target="_blank" rel="noopener" style="background:#25d366; color:#fff; border:none;">💬 WhatsApp</a>` : ''}
+            ${ad.url ? `<a class="pub-btn" href="${escapeHtml(ad.url)}" target="_blank" rel="noopener" style="background:${btnBg}; color:${txtColor}; border:1px solid rgba(255,255,255,.3);">🌐 Web</a>` : ''}
           </div>
         </div>
       `;
